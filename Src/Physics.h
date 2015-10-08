@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Entity.h"
+
 // PhysicsComponent is responsible for moving entities or characters and making sure that
 // things are not occupying same space at any given time.
 class PhysicsComponent
@@ -37,4 +39,7 @@ public:
 	// Function to update and compute physics for all provided entities.
 	// @param entity Array of entities, @param numEntity How many entities are in the array
 	void Update(Entity* entity, int numEntity);
+
+protected:
+	void ParallelUpdate(void* param);
 };

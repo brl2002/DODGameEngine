@@ -2,8 +2,6 @@
 
 #include <string.h>
 #include "Common.h"
-#include "Entity.h"
-#include "ResourceManager.h"
 
 PhysicsComponent::PhysicsComponent(const char* mapBuffer, int width, int height, char* blockChars)
 	: m_Width(width), m_Height(height),
@@ -34,8 +32,10 @@ PhysicsComponent::~PhysicsComponent()
 
 void PhysicsComponent::Update(Entity* entity, int numEntity)
 {
-	for (int i = 0; i < numEntity; ++i)
-	{
+	//AfxBeginThread(ParallelUpdate, new WorkDesc(entity, numEntity));
+}
 
-	}
+void PhysicsComponent::ParallelUpdate(void* param)
+{
+	
 }
