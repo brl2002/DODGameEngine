@@ -1,7 +1,6 @@
 #pragma once
 
 #include <chrono>
-
 #include "ResourceManager.h"
 
 typedef std::chrono::high_resolution_clock EngineClock;
