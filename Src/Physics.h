@@ -38,7 +38,7 @@ public:
 
 	// Function to update and compute physics for all provided entities.
 	// @param entity Array of entities, @param numEntity How many entities are in the array
-	void Update(Entity* entity, int numEntity);
+	void Update(Entity* entities, int numEntities);
 
 protected:
 	void ParallelUpdate(void* param);

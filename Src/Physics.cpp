@@ -30,7 +30,7 @@ PhysicsComponent::~PhysicsComponent()
 	delete[] m_SpaceBuffer;
 }
 
-void PhysicsComponent::Update(Entity* entity, int numEntity)
+void PhysicsComponent::Update(Entity* entities, int numEntities)
 {
 	//AfxBeginThread(ParallelUpdate, new WorkDesc(entity, numEntity));
 }

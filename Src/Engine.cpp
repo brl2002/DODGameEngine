@@ -20,10 +20,6 @@ Engine::Engine()
 		ResourceManager::getInstance().GetMapBufferWidth(),
 		ResourceManager::getInstance().GetMapBufferHeight(),
 		"x");
-
-	entity = new Entity('P');
-	entity->position.x = 10;
-	entity->position.y = 5;
 }
 
 Engine::~Engine()

@@ -34,7 +34,7 @@ public:
 
 	// Function to update rendering components for all entities provided.
 	// @param entity Array of entities, @param numEntity How many entities are in the array
-	void Update(Entity* entity);
+	void Update(Entity* entities, int numEntities);
 
 	// Renders render buffer to the console screen
 	void Render();

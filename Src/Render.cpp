@@ -23,11 +23,11 @@ void RenderComponent::Clear()
 	memcpy(m_RenderableBufferArray, m_MapBufferArray, m_TotalBufferSize);
 }
 
-void RenderComponent::Update(Entity* entity)
+void RenderComponent::Update(Entity* entities, int numEntities)
 {
-	int index = entity->position.y * (m_Width + 1) + entity->position.x;
+	/*int index = entities->position.y * (m_Width + 1) + entities->position.x;
 
-	m_RenderableBufferArray[index] = entity->GetChar();
+	m_RenderableBufferArray[index] = entities->GetChar();*/
 }
 
 void RenderComponent::Render()
