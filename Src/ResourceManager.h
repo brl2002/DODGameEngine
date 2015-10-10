@@ -14,6 +14,12 @@ class ResourceManager
 
 	bool bMapIsSet;
 
+	// Block chars that determine whether an entity can move to a particular space
+	char* m_BlockChars;
+
+	// Size of block chars buffer
+	int m_BlockCharSize;
+
 	ResourceManager();
 	virtual ~ResourceManager();
 
@@ -36,6 +42,13 @@ public:
 	// otherwise the function will return a null pointer.
 	// ************** Users are responsible for deallocating the array. *****************
 	char* AllocateMapBuffer();
+
+	// Allocates navigation buffer array on the heap and returns a pointer to the array.
+	// True means that an entity can navigate into that space.
+	// A successful call to ReadMapFile should be called first before calling this,
+	// otherwise the function will return a null pointer.
+	// ************** Users are responsible for deallocating the array. *****************
+	bool* AllocateNavBuffer(char* blockChars);
 
 	inline const char* GetMapBuffer() { return m_MapBuffer; }
 

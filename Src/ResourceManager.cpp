@@ -107,3 +107,25 @@ char* ResourceManager::AllocateMapBuffer()
 
 	return newMapBuffer;
 }
+
+bool* ResourceManager::AllocateNavBuffer(char* blockChars)
+{
+	bool* navBuffer = new bool[m_Width * m_Height];
+
+	m_BlockChars = blockChars;
+	m_BlockCharSize = strlen(blockChars);
+
+	for (int r = 0; r < m_Height; ++r)
+	{
+		for (int c = 0; c < m_Width; ++c)
+		{
+			int spaceBufferIndex = r * m_Width + c;
+			int mapBufferIndex = r * (m_Width + 1) + c;
+
+			for (int i = 0; i < m_BlockCharSize; ++i)
+			{
+				navBuffer[spaceBufferIndex] = m_MapBuffer[mapBufferIndex] == m_BlockChars[i] ? true : false;
+			}
+		}
+	}
+}

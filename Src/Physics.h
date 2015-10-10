@@ -7,17 +7,8 @@
 class PhysicsComponent
 {
 	// Array of bool, where a single bool value represents whether or not
-	// an object, whether movable character or static entity, is occupying that space.
-	bool* m_SpaceBuffer;
-
-	// Array of chars to store map data
-	//char* m_MapBuffer;
-
-	// Block chars that determine whether an entity can move to a particular space
-	char* m_BlockChars;
-
-	// Size of block chars buffer
-	int m_BlockCharSize;
+	// an entity can navigate into that space.
+	bool* m_NavBuffer;
 
 	// Width of space buffer, width of map buffer would be m_Width + 1
 	int m_Width;
@@ -32,7 +23,7 @@ class PhysicsComponent
 	int m_TotalSpaceBufferSize;
 
 public:
-	PhysicsComponent(const char* mapBuffer, int width, int height, char* blockChars);
+	PhysicsComponent(bool* navBuffer, int width, int height);
 
 	virtual ~PhysicsComponent();
 
