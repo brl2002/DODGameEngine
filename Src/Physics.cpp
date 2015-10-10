@@ -32,10 +32,5 @@ PhysicsComponent::~PhysicsComponent()
 
 void PhysicsComponent::Update(Entity* entities, int numEntities)
 {
-	//AfxBeginThread(ParallelUpdate, new WorkDesc(entity, numEntity));
-}
-
-void PhysicsComponent::ParallelUpdate(void* param)
-{
 	
 }

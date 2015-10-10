@@ -22,16 +22,14 @@ ThreadPool::~ThreadPool()
 	m_LockCondition.notify_all();
 
 	for (std::thread &thread : m_ThreadPool)
-	{
 		thread.join();
-	}
 }
 
 void ThreadPool::ThreadLoop()
 {
 	while (!m_ShouldStop)
 	{
-		Job job;
+		JobDesc job;
 
 		{
 			std::unique_lock<std::mutex> lock(m_QueueMutex);
@@ -47,13 +45,13 @@ void ThreadPool::ThreadLoop()
 
 		AddJobCount();
 
-		job();
+		job.Execute();
 
 		SubtractJobCount();
 	}
 }
 
-void ThreadPool::AddJob(Job job)
+void ThreadPool::AddJob(JobDesc&& job)
 {
 	{
 		std::unique_lock<std::mutex> lock(m_QueueMutex);

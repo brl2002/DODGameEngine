@@ -8,6 +8,8 @@ Engine::Engine()
 {
 	ResourceManager::getInstance().ReadMapFile("map.txt");
 
+	m_ThreadPool = new ThreadPool();
+
 	// Do all inititialization of components here
 	m_RenderComponent = new RenderComponent(
 		ResourceManager::getInstance().AllocateMapBuffer(),
@@ -24,10 +26,12 @@ Engine::Engine()
 
 Engine::~Engine()
 {
+	delete m_ThreadPool;
+
 	delete m_RenderComponent;
 	delete m_PhysicsComponent;
 
-	delete entity;
+	delete[] m_Entities;
 }
 
 void Engine::Run()
@@ -49,7 +53,7 @@ void Engine::Run()
 
 			if (key_code == 100)
 			{
-				entity->velocity.x = 1;
+				//entity->velocity.x = 1;
 			}
 		}
 
@@ -57,7 +61,7 @@ void Engine::Run()
 		{
 			m_RenderComponent->Clear();
 
-			m_RenderComponent->Update(entity);
+			//m_RenderComponent->Update(entity);
 
 			m_RenderComponent->Render();
 
