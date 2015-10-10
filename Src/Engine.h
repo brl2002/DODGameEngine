@@ -9,7 +9,7 @@
 // and includes render, physics, and AI components.
 class Engine
 {
-	ThreadPool* m_ThreadPool;
+	//ThreadPool* m_ThreadPool;
 
 	RenderComponent* m_RenderComponent;
 

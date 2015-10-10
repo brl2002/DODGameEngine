@@ -25,9 +25,12 @@ void RenderComponent::Clear()
 
 void RenderComponent::Update(Entity* entities, int numEntities)
 {
-	/*int index = entities->position.y * (m_Width + 1) + entities->position.x;
+	for (int i = 0; i < numEntities; ++i)
+	{
+		int index = PositionToArrayIndex(entities[i].position.x, entities[i].position.y);
 
-	m_RenderableBufferArray[index] = entities->GetChar();*/
+		m_RenderableBufferArray[index] = entities[i].GetChar();
+	}
 }
 
 void RenderComponent::Render()

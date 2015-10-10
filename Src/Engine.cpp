@@ -8,7 +8,7 @@ Engine::Engine()
 {
 	ResourceManager::getInstance().ReadMapFile("map.txt");
 
-	m_ThreadPool = new ThreadPool();
+	//m_ThreadPool = new ThreadPool();
 
 	// Do all inititialization of components here
 	m_RenderComponent = new RenderComponent(
@@ -22,11 +22,17 @@ Engine::Engine()
 		ResourceManager::getInstance().GetMapBufferWidth(),
 		ResourceManager::getInstance().GetMapBufferHeight(),
 		"x");
+
+	m_Entities = new Entity[2] { 'P', 'X' };
+	m_Entities[0].position.x = 20;
+	m_Entities[0].position.y = 10;
+	m_Entities[1].position.x = 3;
+	m_Entities[1].position.y = 2;
 }
 
 Engine::~Engine()
 {
-	delete m_ThreadPool;
+	//delete m_ThreadPool;
 
 	delete m_RenderComponent;
 	delete m_PhysicsComponent;
@@ -61,7 +67,7 @@ void Engine::Run()
 		{
 			m_RenderComponent->Clear();
 
-			//m_RenderComponent->Update(entity);
+			m_RenderComponent->Update(m_Entities, 2);
 
 			m_RenderComponent->Render();
 

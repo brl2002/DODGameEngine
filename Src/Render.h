@@ -38,4 +38,7 @@ public:
 
 	// Renders render buffer to the console screen
 	void Render();
+
+protected:
+	inline int PositionToArrayIndex(int x, int y) { return y * (m_Width + 1) + x; }
 };
