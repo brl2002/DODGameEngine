@@ -3,18 +3,19 @@
 #include "Entity.h"
 
 // PhysicsComponent is responsible for moving entities or characters and making sure that
-// things are not occupying same space at any given time.
+// things are not occupying same space at any given time. Users are expected to allocate
+// nav buffer and passed to PhysicsComponent during construction.
 class PhysicsComponent
 {
 	// Array of bool, where a single bool value represents whether or not
 	// an entity can navigate into that space.
 	bool* m_NavBuffer;
 
-	// Width of space buffer, width of map buffer would be m_Width + 1
-	int m_Width;
+	// Width of space buffer, mapBufferWidth of map buffer would be m_MapBufferWidth + 1
+	int m_MapBufferWidth;
 
 	// Height of both space and map buffer
-	int m_Height;
+	int m_MapBufferHeight;
 
 	// Total buffer size of the map buffer
 	int m_TotalBufferSize;
@@ -23,7 +24,9 @@ class PhysicsComponent
 	int m_TotalSpaceBufferSize;
 
 public:
-	PhysicsComponent(bool* navBuffer, int width, int height);
+	// PhysicsComponent ctor, pass nav buffer allocated externally along with mapBufferWidth and mapBufferHeight of
+	// map buffer.
+	PhysicsComponent(bool* navBuffer, int mapBufferWidth, int mapBufferHeight);
 
 	virtual ~PhysicsComponent();
 

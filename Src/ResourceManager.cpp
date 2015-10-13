@@ -128,4 +128,6 @@ bool* ResourceManager::AllocateNavBuffer(char* blockChars)
 			}
 		}
 	}
+
+	return navBuffer;
 }

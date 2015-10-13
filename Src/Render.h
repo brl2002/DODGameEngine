@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity.h"
+#include <mutex>
 
 // RenderComponent is responsible for rendering array of char to the console screen.
 class RenderComponent
@@ -13,32 +14,32 @@ class RenderComponent
 	char* m_MapBufferArray;
 
 	// Width of renderableBufferArray
-	int m_Width;
+	int m_MapBufferWidth;
 
 	// Height of renderableBufferArray
-	int m_Height;
+	int m_MapBufferHeight;
 
 	// Actual char array buffer size that includes line endings and null terminator.
 	int m_TotalBufferSize;
 
 public:
-	// RenderComponent ctor with width and height dimension of render and map buffer
-	RenderComponent(char* renderBuffer, char* mapBuffer, int width, int height);
+	// RenderComponent ctor with mapBufferWidth and mapBufferHeight dimension of render and map buffer
+	RenderComponent(char* renderBuffer, char* mapBuffer, int mapBufferWidth, int mapBufferHeight);
 	virtual ~RenderComponent();
 
-	inline int GetRenderableBufferWidth() { return m_Width; }
-	inline int GetRenderableBufferHeight() { return m_Height; }
+	inline int GetRenderableBufferWidth() { return m_MapBufferWidth; }
+	inline int GetRenderableBufferHeight() { return m_MapBufferHeight; }
 
 	// Clear the console screen and copy map buffer to the render buffer
 	void Clear();
 
 	// Function to update rendering components for all entities provided.
 	// @param entity Array of entities, @param numEntity How many entities are in the array
-	void Update(Entity* entities, int numEntities);
+	static void Update(void* renderComponentInst, Entity* entities, int startIndex, int numEntities);
 
 	// Renders render buffer to the console screen
 	void Render();
 
 protected:
-	inline int PositionToArrayIndex(int x, int y) { return y * (m_Width + 1) + x; }
+	inline int PositionToArrayIndex(int x, int y) { return y * (m_MapBufferWidth + 1) + x; }
 };

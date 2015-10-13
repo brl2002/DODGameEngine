@@ -3,17 +3,20 @@
 #include <string.h>
 #include "Common.h"
 
-PhysicsComponent::PhysicsComponent(bool* navBuffer, int width, int height)
-	: m_NavBuffer(navBuffer), m_Width(width), m_Height(height),
-	m_TotalBufferSize((m_Width + 1) * m_Height + 1), m_TotalSpaceBufferSize(m_Width * m_Height)
+PhysicsComponent::PhysicsComponent(bool* navBuffer, int mapBufferWidth, int mapBufferHeight)
+	:	m_NavBuffer(navBuffer),
+		m_MapBufferWidth(mapBufferWidth),
+		m_MapBufferHeight(mapBufferHeight),
+		m_TotalBufferSize((m_MapBufferWidth + 1) * m_MapBufferHeight + 1),
+		m_TotalSpaceBufferSize(m_MapBufferWidth * m_MapBufferHeight)
 {}
 
 PhysicsComponent::~PhysicsComponent()
 {
-	delete[] m_NavBuffer;
+
 }
 
 void PhysicsComponent::Update(Entity* entities, int numEntities)
 {
-	
+
 }

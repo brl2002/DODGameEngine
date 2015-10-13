@@ -6,30 +6,39 @@
 #include <mutex>
 #include <condition_variable>
 
-typedef void(*Func)(void*, int);
-
+template<class DataType>
 // Class that describes a job that a worker thread is going to work on,
 // which include pointer to a function to be called and array of data and
 // length of the array to iterate through.
 class JobDesc
 {
-	Func m_Func;
-	void* m_DataSet;
+	//typedef void(*Func)(void*, int);
+
+	void* m_ObjectInst;
+	void(*m_Func)(void*, DataType*, int, int);
+	DataType* m_DataSet;
+	int m_StartIndex;
 	int m_Length;
 
 public:
 	JobDesc() = default;
 
-	JobDesc(Func func, void* dataSet, int length)
-		: m_Func(func), m_DataSet(dataSet), m_Length(length) {}
+	JobDesc(void* objectInst, void(*func)(void*, DataType*, int, int), DataType* dataSet, int startIndex, int length)
+		:	m_ObjectInst(objectInst),
+			m_Func(func),
+			m_DataSet(dataSet),
+			m_StartIndex(startIndex),
+			m_Length(length)
+	{}
 
 	// Calling this function will run the function based on the description provided.
 	void Execute()
 	{
-		(*m_Func)(m_DataSet, m_Length);
+		(*m_Func)(m_ObjectInst, m_DataSet, m_StartIndex, m_Length);
 	}
 };
 
+template<class DataType>
 // Pool of threads that works on any jobs that are queued. This thread pool
 // is meant to be used for any functions that computes on an array of data.
 class ThreadPool
@@ -38,7 +47,7 @@ class ThreadPool
 
 	int m_JobCount;
 
-	std::queue<JobDesc> m_JobQueue;
+	std::queue<JobDesc<DataType>> m_JobQueue;
 
 	std::mutex m_QueueMutex;
 
@@ -49,21 +58,90 @@ class ThreadPool
 	bool m_ShouldStop;
 
 public:
-	ThreadPool();
-	virtual ~ThreadPool();
+	ThreadPool()
+		: m_ShouldStop(false)
+	{
+		int numThread = std::thread::hardware_concurrency();
 
-	void Stop();
+		for (int i = 0; i < numThread; ++i)
+		{
+			m_ThreadPool.push_back(std::thread(&ThreadPool::ThreadLoop, this));
+		}
+	}
+
+	virtual ~ThreadPool()
+	{
+		{
+			std::unique_lock<std::mutex> lock(m_QueueMutex);
+
+			m_ShouldStop = true;
+
+			m_JobCount = 0;
+		}
+
+		m_LockCondition.notify_all();
+
+		for (std::thread &thread : m_ThreadPool)
+			thread.join();
+	}
+
+	void Stop()
+	{
+		m_ShouldStop = true;
+
+		m_LockCondition.notify_all();
+	}
 
 	inline int GetJobCount() { return m_JobCount; }
 
-	void AddJob(JobDesc&& job);
+	// Add new job to be processed by a thread in the ThreadPool
+	void AddNewJob(JobDesc<DataType>&& job)
+	{
+		{
+			std::unique_lock<std::mutex> lock(m_QueueMutex);
 
-	void Wait();
+			m_JobQueue.push(job);
+
+			++m_JobCount;
+		}
+
+		m_LockCondition.notify_one();
+	}
+
+	void Wait()
+	{
+		while (m_JobCount > 0) {}
+	}
 
 private:
-	void ThreadLoop();
+	void ThreadLoop()
+	{
+		while (!m_ShouldStop)
+		{
+			JobDesc<DataType> job;
 
-	void AddJobCount();
+			{
+				std::unique_lock<std::mutex> lock(m_QueueMutex);
 
-	void SubtractJobCount();
+				m_LockCondition.wait(lock, [&]{ return m_ShouldStop || !m_JobQueue.empty(); });
+
+				if (m_ShouldStop && m_JobQueue.empty()) return;
+
+				job = std::move(m_JobQueue.front());
+
+				m_JobQueue.pop();
+			}
+
+			job.Execute();
+
+			SubtractJobCount();
+		}
+	}
+
+	void SubtractJobCount()
+	{
+		std::unique_lock<std::mutex> lock(m_CountMutex);
+
+		--m_JobCount;
+	}
 };

@@ -9,13 +9,15 @@
 // and includes render, physics, and AI components.
 class Engine
 {
-	//ThreadPool* m_ThreadPool;
+	ThreadPool<Entity>* m_ThreadPool;
 
 	RenderComponent* m_RenderComponent;
 
 	PhysicsComponent* m_PhysicsComponent;
 
 	Entity* m_Entities;
+
+	bool* m_NavBuffer;
 
 public:
 	// Engine ctor, initializes all necessary components.
@@ -25,5 +27,8 @@ public:
 	// Function to start running the engine.
 	void Run();
 
+	void Stop();
+
 protected:
+
 };
