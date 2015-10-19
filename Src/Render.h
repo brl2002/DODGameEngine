@@ -34,7 +34,10 @@ public:
 	void Clear();
 
 	// Function to update rendering components for all entities provided.
-	// @param entity Array of entities, @param numEntity How many entities are in the array
+	// @param renderComponentInst instance of RenderComponent that needs update
+	// @param entity Array of entities
+	// @param startIndex array index to start from
+	// @param numEntity How many entities are in the array
 	static void Update(void* renderComponentInst, Entity* entities, int startIndex, int numEntities);
 
 	// Renders render buffer to the console screen

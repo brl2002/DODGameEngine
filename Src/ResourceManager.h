@@ -45,10 +45,12 @@ public:
 
 	// Allocates navigation buffer array on the heap and returns a pointer to the array.
 	// True means that an entity can navigate into that space.
+	// Array is ordered in a chunk fashion to allow readings to be done in these chunks
+	// when computing for navigation path, and these chunks are ordered like a 2D array.
 	// A successful call to ReadMapFile should be called first before calling this,
 	// otherwise the function will return a null pointer.
 	// ************** Users are responsible for deallocating the array. *****************
-	bool* AllocateNavBuffer(char* blockChars);
+	bool* AllocateNavBuffer(char* blockChars, int segmentWidth, int segmentHeight);
 
 	inline const char* GetMapBuffer() { return m_MapBuffer; }
 

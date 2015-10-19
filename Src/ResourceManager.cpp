@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <string>
+#include "Common.h"
 
 ResourceManager::ResourceManager()
 	: m_MapBuffer(nullptr), m_Width(0), m_Height(0), m_TotalMapBufferLength(0), bMapIsSet(false)
@@ -108,14 +109,42 @@ char* ResourceManager::AllocateMapBuffer()
 	return newMapBuffer;
 }
 
-bool* ResourceManager::AllocateNavBuffer(char* blockChars)
+bool* ResourceManager::AllocateNavBuffer(char* blockChars, int segmentWidth, int segmentHeight)
 {
+	/* Example of a chunk in 3x3 dimension ************************
+	*  . . .
+	*  . . .
+	*  . . . 
+	*  And this chunks are arranged linearly (2D in abstract)
+	***************************************************************/
 	bool* navBuffer = new bool[m_Width * m_Height];
 
 	m_BlockChars = blockChars;
 	m_BlockCharSize = strlen(blockChars);
 
-	for (int r = 0; r < m_Height; ++r)
+	int chunkWidth = m_Width / segmentWidth;
+	int chunkHeight = m_Height / segmentHeight;
+	int numSegment = segmentWidth * segmentHeight;
+
+	for (int chunkIndex = 0; chunkIndex < chunkWidth * chunkHeight; ++chunkIndex)
+	{
+		for (int segIndex = 0; segIndex < numSegment; ++segIndex)
+		{
+			int navBufferIndex = chunkIndex * numSegment + segIndex;
+
+			int mapRow = ArrayAccessHelper::GetSimpleRowIndex(navBufferIndex, numSegment, segmentWidth, chunkWidth);
+			int mapColumn = ArrayAccessHelper::GetSimpleColumnIndex(navBufferIndex, numSegment, segmentWidth, chunkWidth);
+			int mapBufferIndex = mapRow * (m_Width + 1) + mapColumn;
+
+			for (int i = 0; i < m_BlockCharSize; ++i)
+			{
+				navBuffer[navBufferIndex] = m_MapBuffer[mapBufferIndex] == m_BlockChars[i] ? true : false;
+			}
+		}
+	}
+
+	// Previous way of accessing nav buffer as if it was a linear array.
+	/*for (int r = 0; r < m_Height; ++r)
 	{
 		for (int c = 0; c < m_Width; ++c)
 		{
@@ -127,7 +156,7 @@ bool* ResourceManager::AllocateNavBuffer(char* blockChars)
 				navBuffer[spaceBufferIndex] = m_MapBuffer[mapBufferIndex] == m_BlockChars[i] ? true : false;
 			}
 		}
-	}
+	}*/
 
 	return navBuffer;
 }
