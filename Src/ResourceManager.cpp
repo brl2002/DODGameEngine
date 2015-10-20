@@ -132,8 +132,8 @@ bool* ResourceManager::AllocateNavBuffer(char* blockChars, int segmentWidth, int
 		{
 			int navBufferIndex = chunkIndex * numSegment + segIndex;
 
-			int mapRow = ArrayAccessHelper::GetSimpleRowIndex(navBufferIndex, numSegment, segmentWidth, chunkWidth);
-			int mapColumn = ArrayAccessHelper::GetSimpleColumnIndex(navBufferIndex, numSegment, segmentWidth, chunkWidth);
+			int mapRow = ArrayAccessHelper::GetSimpleRowIndex(navBufferIndex);
+			int mapColumn = ArrayAccessHelper::GetSimpleColumnIndex(navBufferIndex);
 			int mapBufferIndex = mapRow * (m_Width + 1) + mapColumn;
 
 			for (int i = 0; i < m_BlockCharSize; ++i)
