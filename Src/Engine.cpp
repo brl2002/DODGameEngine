@@ -3,11 +3,27 @@
 #include <conio.h>
 #include "Common.h"
 #include "ResourceManager.h"
+#include "Graph.h"
 
 Engine::Engine()
 {
+	// Read a map file first.
 	ResourceManager::getInstance().ReadMapFile("map.txt");
-	m_NavBuffer = ResourceManager::getInstance().AllocateNavBuffer("x", 3, 3);
+
+	int width = ResourceManager::getInstance().GetMapBufferWidth();
+	int height = ResourceManager::getInstance().GetMapBufferHeight();
+	int segmentWidth = 3;
+	int segmentHeight = 3;
+	int chunkWidth = width / segmentWidth;
+	int chunkHeight = height / segmentHeight;
+	int numSegmentPerChunk = segmentWidth * segmentHeight;
+
+	// Preparing ArrayAccessHelper before using its methods.
+	ArrayAccessHelper::Setup(numSegmentPerChunk, chunkWidth,
+		width, height, segmentWidth, segmentHeight);
+
+	// Allocate a navigation buffer based on the map read.
+	m_NavBuffer = ResourceManager::getInstance().AllocateNavBuffer("x", segmentWidth, segmentHeight);
 
 	//m_ThreadPool = new ThreadPool<Entity>();
 
@@ -15,14 +31,10 @@ Engine::Engine()
 	m_RenderComponent = new RenderComponent(
 		ResourceManager::getInstance().AllocateMapBuffer(),
 		ResourceManager::getInstance().AllocateMapBuffer(),
-		ResourceManager::getInstance().GetMapBufferWidth(),
-		ResourceManager::getInstance().GetMapBufferHeight());
+		width, height);
 
 	m_PhysicsComponent = new PhysicsComponent(
-		m_NavBuffer,
-		ResourceManager::getInstance().GetMapBufferWidth(),
-		ResourceManager::getInstance().GetMapBufferHeight(),
-		3, 3);
+		m_NavBuffer, width, height, segmentWidth, segmentHeight);
 
 	m_Entities = new Entity[4] { 'P', 'X', 'X', 'X' };
 	m_Entities[0].position.x = 20;
@@ -35,8 +47,11 @@ Engine::Engine()
 	m_Entities[3].position.y = 2;
 }
 
+// Deconstructor
 Engine::~Engine()
 {
+	// Deallocate any necessary variables for memory management.
+
 	//delete m_ThreadPool;
 
 	delete m_RenderComponent;
@@ -51,28 +66,32 @@ void Engine::Run()
 {
 	g_IsRunning = true;
 
+	// Declare frame time calculation related variables.
 	auto currentTime = EngineClock::now();
 	auto lastTime = EngineClock::now();
 
+	// Main loop.
 	while (g_IsRunning)
 	{
+		// Frame time computation.
 		currentTime = EngineClock::now();
-
 		double deltaTime = std::chrono::duration<double>(currentTime - lastTime).count();
 
+		// Processing inputs prior to doing any updates.
 		if (_kbhit())
 		{
 			int key_code = _getch();
 
 			if (key_code == 100)
 			{
-				//m_Entities[0].velocity.x = 1;
 				g_IsRunning = false;
 			}
 		}
 
+		// Attemp to render at specific frames per second.
 		if (deltaTime > 0.0167)
 		{
+			// Clear screen first.
 			m_RenderComponent->Clear();
 
 			RenderComponent::Update(m_RenderComponent, m_Entities, 0, 4);
@@ -80,8 +99,10 @@ void Engine::Run()
 			m_ThreadPool->AddNewJob(JobDesc<Entity>(m_RenderComponent, &RenderComponent::Update, m_Entities, 2, 2));
 			m_ThreadPool->Wait();*/
 
+			// Render.
 			m_RenderComponent->Render();
 
+			// Capture current time to be used for calculating frame time later.
 			lastTime = EngineClock::now();
 		}
 	}

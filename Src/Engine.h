@@ -20,13 +20,16 @@ class Engine
 	bool* m_NavBuffer;
 
 public:
-	// Engine ctor, initializes all necessary components.
+	// Engine constructor, initializes all necessary components.
 	Engine();
+
+	// Engine destructor.
 	virtual ~Engine();
 
 	// Function to start running the engine.
 	void Run();
 
+	// Stop running engine.
 	void Stop();
 
 protected:

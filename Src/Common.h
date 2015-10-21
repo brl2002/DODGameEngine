@@ -36,20 +36,36 @@ extern bool g_IsRunning;
 // and array that accesses memory in chunks.
 class ArrayAccessHelper
 {
+	// Table of addition factor for getting any adjacent segments' simple index.
 	static int m_AddFactorTable[9];
+
+	// Table of cost to travel to any adjacent segments from current segment.
 	static int m_CostTable[9];
 
+	// Number of segments per chunk.
 	static int m_NumSegmentPerChunk;
+
+	// Chunk width, number of chunks, in a row of a map.
 	static int m_ChunkWidth;
+
+	// Total number of segments horizontally in a row of a map.
 	static int m_TotalWidth;
+
+	// Total number of segments vertically in a column of a map.
 	static int m_TotalHeight;
+
+	// Number of segments horizontally in a row of a chunk.
 	static int m_SegmentWidthPerChunk;
+
+	// Number of segments vertically in a column of a chunk.
 	static int m_SegmentHeightPerChunk;
 
 private:
 	ArrayAccessHelper();
 
 public:
+	// Function to setup ArrayAccessHelper's graph-wise logical variables.
+	// Should be called before calling any of the public methods.
 	static void Setup(int numSegmentPerChunk,
 		int chunkWidth,
 		int totalWidth,
@@ -65,8 +81,10 @@ public:
 		m_SegmentHeightPerChunk = segmentHeightPerChunk;
 	}
 
+	// Get a value from addition factor table, spanning 0 ~ 8.
 	inline static int GetAddFactor(int index) { return m_AddFactorTable[index]; }
 
+	// Get a cost value from cost table, spanning 0 ~ 8.
 	inline static int GetCost(int index) { return m_CostTable[index]; }
 
 	// Function returns an column index for accessing a simple linear array for a given index for a chunk-array.

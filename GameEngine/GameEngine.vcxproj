@@ -25,6 +25,7 @@
     <ClInclude Include="..\Src\Common.h" />
     <ClInclude Include="..\Src\Engine.h" />
     <ClInclude Include="..\Src\Entity.h" />
+    <ClInclude Include="..\Src\Graph.h" />
     <ClInclude Include="..\Src\Physics.h" />
     <ClInclude Include="..\Src\Render.h" />
     <ClInclude Include="..\Src\ResourceManager.h" />
