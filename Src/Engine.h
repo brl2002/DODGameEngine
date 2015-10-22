@@ -2,6 +2,7 @@
 
 #include "Render.h"
 #include "Physics.h"
+#include "AIManager.h"
 #include "Entity.h"
 #include "ThreadPool.h"
 
@@ -15,9 +16,13 @@ class Engine
 
 	PhysicsComponent* m_PhysicsComponent;
 
+	AIManager* m_AIManager;
+
 	Entity* m_Entities;
 
 	bool* m_NavBuffer;
+
+	bool m_IsInitializationSuccessful;
 
 public:
 	// Engine constructor, initializes all necessary components.

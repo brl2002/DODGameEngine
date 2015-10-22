@@ -1,7 +1,6 @@
 #include "Render.h"
-
 #include "ResourceManager.h"
-
+#include "Common.h"
 #include <stdio.h>
 #include <string>
 
@@ -50,4 +49,19 @@ void RenderComponent::Render()
 {
 	// Print render buffer to screen.
 	printf(m_RenderableBufferArray);
+}
+
+void RenderComponent::Debug(Entity* entities, int startIndex, int numEntities)
+{
+	for (int i = startIndex; i < numEntities; ++i)
+	{
+		for (auto segment : entities[i].path)
+		{
+			int segmentIndex = segment->GetIndex();
+			int x = ArrayAccessHelper::GetSimpleColumnIndex(segmentIndex);
+			int y = ArrayAccessHelper::GetSimpleRowIndex(segmentIndex);
+			int index = PositionToArrayIndex(x, y);
+			m_RenderableBufferArray[index] = '+';
+		}
+	}
 }

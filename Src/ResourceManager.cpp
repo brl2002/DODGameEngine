@@ -13,16 +13,16 @@ ResourceManager::~ResourceManager()
 	if (m_MapBuffer != nullptr) delete[] m_MapBuffer;
 }
 
-bool ResourceManager::ReadMapFile(char* fileName)
+bool ResourceManager::ReadMapFile( char* fileName )
 {
 	char *dir = "../Resources/";
-	int finalNameLength = std::strlen(dir) + std::strlen(fileName) + 1;
+	int finalNameLength = std::strlen( dir ) + std::strlen( fileName ) + 1;
 	char* finalName = new char[finalNameLength];
-	strcpy_s(finalName, finalNameLength, dir);
-	strcat_s(finalName, finalNameLength, fileName);
+	strcpy_s( finalName, finalNameLength, dir );
+	strcat_s( finalName, finalNameLength, fileName );
 
 	std::ifstream mapFile;
-	mapFile.open(finalName);
+	mapFile.open( finalName );
 
 	delete[] finalName;
 
@@ -62,7 +62,7 @@ bool ResourceManager::ReadMapFile(char* fileName)
 	mapFile.seekg(0);
 	lineCount = 0;
 
-	m_TotalMapBufferLength = (m_Width + 1) * m_Height + 1;
+	m_TotalMapBufferLength = ( m_Width + 1 ) * m_Height + 1;
 
 	m_MapBuffer = new char[m_TotalMapBufferLength];
 
@@ -80,11 +80,11 @@ bool ResourceManager::ReadMapFile(char* fileName)
 
 		if (lineCount == 1)
 		{
-			strcpy_s(m_MapBuffer, m_TotalMapBufferLength, line);
+			strcpy_s( m_MapBuffer, m_TotalMapBufferLength, line );
 		}
 		else if (lineCount > 1)
 		{
-			strcat_s(m_MapBuffer, m_TotalMapBufferLength, line);
+			strcat_s( m_MapBuffer, m_TotalMapBufferLength, line );
 		}
 
 		++lineCount;
@@ -104,12 +104,12 @@ char* ResourceManager::AllocateMapBuffer()
 
 	char* newMapBuffer = new char[m_TotalMapBufferLength];
 
-	memcpy(newMapBuffer, m_MapBuffer, m_TotalMapBufferLength);
+	memcpy( newMapBuffer, m_MapBuffer, m_TotalMapBufferLength );
 
 	return newMapBuffer;
 }
 
-bool* ResourceManager::AllocateNavBuffer(char* blockChars, int segmentWidth, int segmentHeight)
+bool* ResourceManager::AllocateNavBuffer( char* blockChars, int segmentWidth, int segmentHeight )
 {
 	/* Example of a chunk in 3x3 dimension ************************
 	*  . . .
@@ -132,9 +132,9 @@ bool* ResourceManager::AllocateNavBuffer(char* blockChars, int segmentWidth, int
 		{
 			int navBufferIndex = chunkIndex * numSegment + segIndex;
 
-			int mapRow = ArrayAccessHelper::GetSimpleRowIndex(navBufferIndex);
-			int mapColumn = ArrayAccessHelper::GetSimpleColumnIndex(navBufferIndex);
-			int mapBufferIndex = mapRow * (m_Width + 1) + mapColumn;
+			int mapRow = ArrayAccessHelper::GetSimpleRowIndex( navBufferIndex );
+			int mapColumn = ArrayAccessHelper::GetSimpleColumnIndex( navBufferIndex );
+			int mapBufferIndex = mapRow * ( m_Width + 1 ) + mapColumn;
 
 			for (int i = 0; i < m_BlockCharSize; ++i)
 			{

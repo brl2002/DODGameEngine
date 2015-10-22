@@ -3,7 +3,7 @@
 #include <string.h>
 #include "Common.h"
 
-PhysicsComponent::PhysicsComponent(bool* navBuffer, int mapBufferWidth, int mapBufferHeight, int segmentWidth, int segmentHeight)
+PhysicsComponent::PhysicsComponent( bool* navBuffer, int mapBufferWidth, int mapBufferHeight, int segmentWidth, int segmentHeight )
 	:	m_NavBuffer(navBuffer),
 		m_MapBufferWidth(mapBufferWidth),
 		m_MapBufferHeight(mapBufferHeight),
@@ -20,7 +20,7 @@ PhysicsComponent::~PhysicsComponent()
 
 }
 
-void PhysicsComponent::Update(void* physicsComponentInst, Entity* entities, int startIndex, int numEntities)
+void PhysicsComponent::Update( void* physicsComponentInst, Entity* entities, int startIndex, int numEntities )
 {
 
 }

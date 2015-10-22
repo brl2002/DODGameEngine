@@ -33,9 +33,6 @@
     <ClCompile Include="..\Src\Common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\ThreadPool.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\Src\AIManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

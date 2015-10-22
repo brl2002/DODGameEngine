@@ -38,7 +38,7 @@ class PhysicsComponent
 public:
 	// PhysicsComponent ctor, pass nav buffer allocated externally along with mapBufferWidth and mapBufferHeight of
 	// map buffer.
-	PhysicsComponent(bool* navBuffer, int mapBufferWidth, int mapBufferHeight, int segmentWidth, int segmentHeight);
+	PhysicsComponent( bool* navBuffer, int mapBufferWidth, int mapBufferHeight, int segmentWidth, int segmentHeight );
 
 	virtual ~PhysicsComponent();
 
@@ -47,5 +47,5 @@ public:
 	// @param entity Array of entities
 	// @param startIndex array index to start from
 	// @param numEntity How many entities are in the array
-	static void Update(void* physicsComponentInst, Entity* entities, int startIndex, int numEntities);
+	static void Update( void* physicsComponentInst, Entity* entities, int startIndex, int numEntities );
 };

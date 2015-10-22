@@ -15,7 +15,7 @@ class PriorityQueue
 public:
 	inline bool Empty() { return elements.empty(); }
 
-	inline void Put(T item, Number priority) { elements.emplace(priority, item); }
+	inline void Put( T item, Number priority ) { elements.emplace(priority, item); }
 
 	inline T Get()
 	{
@@ -36,9 +36,9 @@ private:
 	int m_Index;
 
 public:
-	inline void AddAdjacentSegment(Segment* segment, int cost) { m_SegmentNeighbors.push_back(Neighbor(segment, cost)); }
+	inline void AddAdjacentSegment( Segment* segment, int cost ) { m_SegmentNeighbors.push_back(Neighbor(segment, cost)); }
 
-	inline void SetIndex(int index) { m_Index = index; }
+	inline void SetIndex( int index ) { m_Index = index; }
 
 	inline int GetIndex() { return m_Index; }
 
@@ -52,7 +52,7 @@ class Graph
 	std::vector<Segment> m_Segments;
 
 public:
-	Graph::Graph(int size)
+	Graph::Graph( int size )
 		: m_Size(size),
 		m_Segments(std::vector<Segment>(m_Size))
 	{
@@ -62,7 +62,7 @@ public:
 		}
 	}
 
-	Segment* GetSegment(int index) { return &m_Segments[index]; }
+	Segment* GetSegment( int index ) { return &m_Segments[index]; }
 
 	std::vector<Segment>& GetContainer() { return m_Segments; }
 };

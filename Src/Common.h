@@ -66,12 +66,13 @@ private:
 public:
 	// Function to setup ArrayAccessHelper's graph-wise logical variables.
 	// Should be called before calling any of the public methods.
-	static void Setup(int numSegmentPerChunk,
+	static void Setup(
+		int numSegmentPerChunk,
 		int chunkWidth,
 		int totalWidth,
 		int totalHeight,
 		int segmentWidthPerChunk,
-		int segmentHeightPerChunk)
+		int segmentHeightPerChunk )
 	{
 		m_NumSegmentPerChunk = numSegmentPerChunk;
 		m_ChunkWidth = chunkWidth;
@@ -79,45 +80,57 @@ public:
 		m_TotalHeight = totalHeight;
 		m_SegmentWidthPerChunk = segmentWidthPerChunk;
 		m_SegmentHeightPerChunk = segmentHeightPerChunk;
+
+		// Setting up our add factor table based on logical variables.
+		int maxAddtionFactor = m_TotalWidth + 1;
+		for (int i = 0; i < 3; ++i)
+		{
+			// This part will set 0, 1, 2 factors in our table.
+			m_AddFactorTable[i] = (maxAddtionFactor - i) * -1;
+
+			// 8 is the last index of our add factor table.
+			// This part will set 8, 7, 6 factors in our table.
+			m_AddFactorTable[8 - i] = maxAddtionFactor - i;
+		}
 	}
 
 	// Get a value from addition factor table, spanning 0 ~ 8.
-	inline static int GetAddFactor(int index) { return m_AddFactorTable[index]; }
+	inline static int GetAddFactor( int index ) { return m_AddFactorTable[index]; }
 
 	// Get a cost value from cost table, spanning 0 ~ 8.
-	inline static int GetCost(int index) { return m_CostTable[index]; }
+	inline static int GetCost( int index ) { return m_CostTable[index]; }
 
 	// Function returns an column index for accessing a simple linear array for a given index for a chunk-array.
-	inline static int GetSimpleColumnIndex(int chunkIndex)
+	inline static int GetSimpleColumnIndex( int chunkIndex )
 	{
-		return ((chunkIndex % m_NumSegmentPerChunk) % m_SegmentWidthPerChunk) +
-			((chunkIndex / m_NumSegmentPerChunk) % m_ChunkWidth) * m_SegmentWidthPerChunk;
+		return (( chunkIndex % m_NumSegmentPerChunk ) % m_SegmentWidthPerChunk ) +
+			(( chunkIndex / m_NumSegmentPerChunk ) % m_ChunkWidth ) * m_SegmentWidthPerChunk;
 	}
 
 	// Function returns an row index for accessing a simple linear array for a given index for a chunk-array.
-	inline static int GetSimpleRowIndex(int chunkIndex)
+	inline static int GetSimpleRowIndex( int chunkIndex )
 	{
-		return (chunkIndex / (m_NumSegmentPerChunk * m_ChunkWidth)) *
-			m_SegmentWidthPerChunk + (chunkIndex % m_NumSegmentPerChunk) / m_SegmentWidthPerChunk;
+		return ( chunkIndex / ( m_NumSegmentPerChunk * m_ChunkWidth )) *
+			m_SegmentHeightPerChunk + ( chunkIndex % m_NumSegmentPerChunk ) / m_SegmentWidthPerChunk;
 	}
 
 	// Function returns final index for accessing a simple linear array for a given index for a chunk-array.
-	static int GetSimpleIndex(int chunkIndex)
+	static int GetSimpleIndex( int chunkIndex )
 	{
-		return GetSimpleRowIndex(chunkIndex) * 9 + GetSimpleColumnIndex(chunkIndex);
+		return GetSimpleRowIndex( chunkIndex ) * m_TotalWidth + GetSimpleColumnIndex( chunkIndex );
 	}
 
 	// Function returns final index for accessing a chunk-bsed array for a given simple linear index.
-	static int GetChunkIndex(int simpleIndex)
+	static int GetChunkIndex( int simpleIndex )
 	{
 		int columnIndex = simpleIndex % m_TotalWidth;
 		int rowIndex = simpleIndex / m_TotalWidth;
 		int chunkColumnIndex = columnIndex / m_SegmentWidthPerChunk;
 		int chunkRowIndex = rowIndex / m_SegmentHeightPerChunk;
-		int innerSegmentIndex = (columnIndex % m_SegmentWidthPerChunk)
-			+ (rowIndex % m_SegmentHeightPerChunk) * m_SegmentWidthPerChunk;
+		int innerSegmentIndex = ( columnIndex % m_SegmentWidthPerChunk)
+			+ ( rowIndex % m_SegmentHeightPerChunk ) * m_SegmentWidthPerChunk;
 
-		return (chunkRowIndex * (m_TotalWidth / m_SegmentWidthPerChunk) + chunkColumnIndex)
-			* (m_SegmentWidthPerChunk * m_SegmentHeightPerChunk) + innerSegmentIndex;
+		return ( chunkRowIndex * ( m_TotalWidth / m_SegmentWidthPerChunk ) + chunkColumnIndex )
+			* ( m_SegmentWidthPerChunk * m_SegmentHeightPerChunk ) + innerSegmentIndex;
 	}
 };

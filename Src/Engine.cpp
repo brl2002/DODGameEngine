@@ -8,7 +8,8 @@
 Engine::Engine()
 {
 	// Read a map file first.
-	ResourceManager::getInstance().ReadMapFile("map.txt");
+	m_IsInitializationSuccessful = 
+		ResourceManager::getInstance().ReadMapFile("map.txt");
 
 	int width = ResourceManager::getInstance().GetMapBufferWidth();
 	int height = ResourceManager::getInstance().GetMapBufferHeight();
@@ -31,10 +32,13 @@ Engine::Engine()
 	m_RenderComponent = new RenderComponent(
 		ResourceManager::getInstance().AllocateMapBuffer(),
 		ResourceManager::getInstance().AllocateMapBuffer(),
-		width, height);
+		width, height );
 
 	m_PhysicsComponent = new PhysicsComponent(
-		m_NavBuffer, width, height, segmentWidth, segmentHeight);
+		m_NavBuffer, width, height, segmentWidth, segmentHeight );
+
+	m_AIManager = new AIManager( m_NavBuffer, width, height );
+	m_AIManager->SetupNavigationGraph(segmentWidth, segmentHeight);
 
 	m_Entities = new Entity[4] { 'P', 'X', 'X', 'X' };
 	m_Entities[0].position.x = 20;
@@ -75,7 +79,7 @@ void Engine::Run()
 	{
 		// Frame time computation.
 		currentTime = EngineClock::now();
-		double deltaTime = std::chrono::duration<double>(currentTime - lastTime).count();
+		double deltaTime = std::chrono::duration<double>( currentTime - lastTime ).count();
 
 		// Processing inputs prior to doing any updates.
 		if (_kbhit())
@@ -88,13 +92,17 @@ void Engine::Run()
 			}
 		}
 
+		AIManager::Update( m_AIManager, m_Entities, 0, 4 );
+
 		// Attemp to render at specific frames per second.
 		if (deltaTime > 0.0167)
 		{
 			// Clear screen first.
 			m_RenderComponent->Clear();
 
-			RenderComponent::Update(m_RenderComponent, m_Entities, 0, 4);
+			m_RenderComponent->Debug(m_Entities, 1, 4);
+
+			RenderComponent::Update( m_RenderComponent, m_Entities, 0, 4 );
 			/*m_ThreadPool->AddNewJob(JobDesc<Entity>(m_RenderComponent, &RenderComponent::Update, m_Entities, 0, 2));
 			m_ThreadPool->AddNewJob(JobDesc<Entity>(m_RenderComponent, &RenderComponent::Update, m_Entities, 2, 2));
 			m_ThreadPool->Wait();*/

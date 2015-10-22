@@ -24,10 +24,12 @@ class RenderComponent
 
 public:
 	// RenderComponent ctor with mapBufferWidth and mapBufferHeight dimension of render and map buffer
-	RenderComponent(char* renderBuffer, char* mapBuffer, int mapBufferWidth, int mapBufferHeight);
+	RenderComponent( char* renderBuffer, char* mapBuffer, int mapBufferWidth, int mapBufferHeight );
+	
 	virtual ~RenderComponent();
 
 	inline int GetRenderableBufferWidth() { return m_MapBufferWidth; }
+
 	inline int GetRenderableBufferHeight() { return m_MapBufferHeight; }
 
 	// Clear the console screen and copy map buffer to the render buffer
@@ -38,11 +40,13 @@ public:
 	// @param entity Array of entities
 	// @param startIndex array index to start from
 	// @param numEntity How many entities are in the array
-	static void Update(void* renderComponentInst, Entity* entities, int startIndex, int numEntities);
+	static void Update( void* renderComponentInst, Entity* entities, int startIndex, int numEntities );
 
 	// Renders render buffer to the console screen
 	void Render();
 
+	void Debug(Entity* entities, int startIndex, int numEntities);
+
 protected:
-	inline int PositionToArrayIndex(int x, int y) { return y * (m_MapBufferWidth + 1) + x; }
+	inline int PositionToArrayIndex( int x, int y ) { return y * (m_MapBufferWidth + 1) + x; }
 };

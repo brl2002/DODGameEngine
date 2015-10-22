@@ -18,7 +18,6 @@
     <ClCompile Include="..\Src\Physics.cpp" />
     <ClCompile Include="..\Src\Render.cpp" />
     <ClCompile Include="..\Src\ResourceManager.cpp" />
-    <ClCompile Include="..\Src\ThreadPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Src\AIManager.h" />
