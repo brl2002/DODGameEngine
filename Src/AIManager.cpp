@@ -1,10 +1,12 @@
 #include "AIManager.h"
 #include "Common.h"
+#include "Enemy.h"
 #include <vector>
 #include <unordered_map>
 #include <queue>
 #include <tuple>
 
+// Constructor
 AIManager::AIManager( const bool* navBuffer, int mapBufferWidth, int mapBufferHeight )
 	:	m_MapBufferWidth(mapBufferWidth),
 		m_MapBufferHeight(mapBufferHeight),
@@ -14,32 +16,51 @@ AIManager::AIManager( const bool* navBuffer, int mapBufferWidth, int mapBufferHe
 	m_NavBuffer = navBuffer;
 }
 
+// Desctructor
 AIManager::~AIManager()
 {
 	delete m_MapGraph;
 }
 
-void AIManager::Update( void* aiManagerInst, Entity* entities, int startIndex, int numEntities )
+void AIManager::Update( void* aiManagerInst, Entity** entities, int startIndex, int numEntities, float deltaTime )
 {
+	// Cast to AIManager pointer for us to use.
 	AIManager* aiManager = (AIManager*)aiManagerInst;
 
+	// Get graph and map buffer width from AIManager instance.
 	Graph* graph = aiManager->m_MapGraph;
 	int width = aiManager->m_MapBufferWidth;
 
-	for (int i = 1; i < numEntities; ++i)
+	// For each entity in the list.
+	int maxIndex = startIndex + numEntities;
+	for (int i = startIndex; i < maxIndex; ++i)
 	{
-		int startIndex = entities[i].position.y * width + entities[i].position.x;
-		Segment* startSegment = graph->GetSegment( ArrayAccessHelper::GetChunkIndex( startIndex ) );
+		// Cast current Entity to Enemy and get its target.
+		Enemy* enemy = dynamic_cast<Enemy*>(entities[i]);
+		Entity* target = enemy->GetTarget();
 
-		int endIndex = entities[0].position.y * width + entities[0].position.x;
-		Segment* targetSegment = graph->GetSegment( ArrayAccessHelper::GetChunkIndex( endIndex ) );
-	
-		CheckedSegments checkedSegments;
-		Cost cost;
+		int currentIndex = enemy->position.y * width + enemy->position.x;
+		Segment* currentSegment = graph->GetSegment( ArrayAccessHelper::GetChunkIndex( currentIndex ));
 
-		FindPath( startSegment, targetSegment, checkedSegments, cost);
+		int targetIndex = target->position.y * width + target->position.x;
+		Segment* targetSegment = graph->GetSegment( ArrayAccessHelper::GetChunkIndex( targetIndex ));
 
-		entities[i].path = ReconstructPath( startSegment, targetSegment, checkedSegments );
+		//enemy->Update( deltaTime );
+
+		//if (enemy->GetWaitTime() > 1.0f && enemy->GetTargetSegment() != targetSegment)
+		if (enemy->GetTargetSegment() != targetSegment)
+		{
+			//enemy->ResetWaitTime();
+
+			CheckedSegments checkedSegments;
+			Cost cost;
+
+			FindPath( currentSegment, targetSegment, checkedSegments, cost );
+
+			enemy->path = ReconstructPath( currentSegment, targetSegment, checkedSegments );
+
+			enemy->SetTargetSegment( targetSegment );
+		}
 	}
 }
 

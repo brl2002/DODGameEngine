@@ -6,8 +6,10 @@
 #include "Entity.h"
 #include "ThreadPool.h"
 
+//////////////////////////////////////////////////////////////////////////////////
 // Engine class is responsible for managing the entire game system
 // and includes render, physics, and AI components.
+/////////////////////////////////////////////////////////////////////////////////
 class Engine
 {
 	//ThreadPool<Entity>* m_ThreadPool;
@@ -18,11 +20,13 @@ class Engine
 
 	AIManager* m_AIManager;
 
-	Entity* m_Entities;
+	Entity** m_Entities;
 
 	bool* m_NavBuffer;
 
 	bool m_IsInitializationSuccessful;
+
+	bool m_IsRunning;
 
 public:
 	// Engine constructor, initializes all necessary components.

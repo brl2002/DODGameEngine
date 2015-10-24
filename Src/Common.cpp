@@ -1,7 +1,5 @@
 #include "Common.h"
 
-bool g_IsRunning = false;
-
 int ArrayAccessHelper::m_AddFactorTable[9] =
 {
 	-10,	-9,		-8,

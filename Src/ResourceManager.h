@@ -30,6 +30,7 @@ private:
 	void operator= ( ResourceManager const& ) = delete;
 
 public:
+	// Get singleton instance of ResourceManager
 	static ResourceManager& getInstance()
 	{
 		static ResourceManager instance;
@@ -55,9 +56,12 @@ public:
 	// ************** Users are responsible for deallocating the array. *****************
 	bool* AllocateNavBuffer( char* blockChars, int segmentWidth, int segmentHeight );
 
+	// Get constant pointer to allocated map buffer.
 	inline const char* GetMapBuffer() { return m_MapBuffer; }
 
+	// Get width of the map buffer.
 	inline int GetMapBufferWidth() { return m_Width; }
 
+	// Get height of the map buffer.
 	inline int GetMapBufferHeight() { return m_Height; }
 };

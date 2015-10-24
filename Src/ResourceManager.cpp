@@ -138,7 +138,7 @@ bool* ResourceManager::AllocateNavBuffer( char* blockChars, int segmentWidth, in
 
 			for (int i = 0; i < m_BlockCharSize; ++i)
 			{
-				navBuffer[navBufferIndex] = m_MapBuffer[mapBufferIndex] == m_BlockChars[i] ? true : false;
+				navBuffer[navBufferIndex] = m_MapBuffer[mapBufferIndex] == m_BlockChars[i] ? false : true;
 			}
 		}
 	}

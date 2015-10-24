@@ -1,14 +1,8 @@
 #pragma once
 
 #include <vector>
+#include "Common.h"
 #include "Graph.h"
-
-class Vector2D
-{
-public:
-	int x;
-	int y;
-};
 
 class Entity
 {
@@ -16,13 +10,13 @@ class Entity
 
 public:
 	Entity( char renderCharacter )
-		: m_RenderCharacter(renderCharacter)
+		:	m_RenderCharacter(renderCharacter)
 	{}
 
 	inline char GetChar() { return m_RenderCharacter; }
 
+	virtual void Update( float deltaTime ) = 0;
+
 	Vector2D position;
 	Vector2D velocity;
-
-	std::vector<Segment*> path;
 };

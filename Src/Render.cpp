@@ -30,7 +30,7 @@ void RenderComponent::Clear()
 	memcpy(m_RenderableBufferArray, m_MapBufferArray, m_TotalBufferSize);
 }
 
-void RenderComponent::Update(void* renderComponentInst, Entity* entities, int startIndex, int numEntities)
+void RenderComponent::Update(void* renderComponentInst, Entity** entities, int startIndex, int numEntities, float deltaTime)
 {
 	// Cast void pointer variable to RenderComponent pointer.
 	RenderComponent* renderComponent = (RenderComponent*)renderComponentInst;
@@ -39,9 +39,9 @@ void RenderComponent::Update(void* renderComponentInst, Entity* entities, int st
 	int endIndex = startIndex + numEntities;
 	for (int i = startIndex; i < endIndex; ++i)
 	{
-		int index = renderComponent->PositionToArrayIndex(entities[i].position.x, entities[i].position.y);
+		int index = renderComponent->PositionToArrayIndex(entities[i]->position.x, entities[i]->position.y);
 
-		renderComponent->m_RenderableBufferArray[index] = entities[i].GetChar();
+		renderComponent->m_RenderableBufferArray[index] = entities[i]->GetChar();
 	}
 }
 
@@ -51,17 +51,17 @@ void RenderComponent::Render()
 	printf(m_RenderableBufferArray);
 }
 
-void RenderComponent::Debug(Entity* entities, int startIndex, int numEntities)
+void RenderComponent::Debug(Entity** entities, int startIndex, int numEntities)
 {
-	for (int i = startIndex; i < numEntities; ++i)
-	{
-		for (auto segment : entities[i].path)
-		{
-			int segmentIndex = segment->GetIndex();
-			int x = ArrayAccessHelper::GetSimpleColumnIndex(segmentIndex);
-			int y = ArrayAccessHelper::GetSimpleRowIndex(segmentIndex);
-			int index = PositionToArrayIndex(x, y);
-			m_RenderableBufferArray[index] = '+';
-		}
-	}
+	//for (int i = startIndex; i < numEntities; ++i)
+	//{
+	//	for (auto segment : entities[i].path)
+	//	{
+	//		int segmentIndex = segment->GetIndex();
+	//		int x = ArrayAccessHelper::GetSimpleColumnIndex(segmentIndex);
+	//		int y = ArrayAccessHelper::GetSimpleRowIndex(segmentIndex);
+	//		int index = PositionToArrayIndex(x, y);
+	//		m_RenderableBufferArray[index] = '+';
+	//	}
+	//}
 }

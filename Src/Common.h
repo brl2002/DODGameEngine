@@ -30,7 +30,16 @@
 
 typedef std::chrono::high_resolution_clock EngineClock;
 
-extern bool g_IsRunning;
+class Vector2D
+{
+public:
+	Vector2D() : x(0), y(0) {}
+
+	Vector2D(float X, float Y) : x(X), y(Y) {}
+
+	float x;
+	float y;
+};
 
 // ArrayAccessHelper is responsible for helping accessing array betwen simple linear array
 // and array that accesses memory in chunks.

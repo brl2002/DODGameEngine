@@ -20,7 +20,27 @@ PhysicsComponent::~PhysicsComponent()
 
 }
 
-void PhysicsComponent::Update( void* physicsComponentInst, Entity* entities, int startIndex, int numEntities )
+void PhysicsComponent::Update( void* physicsComponentInst, Entity** entities, int startIndex, int numEntities, float deltaTime )
 {
+	PhysicsComponent* physicsComp = (PhysicsComponent*)physicsComponentInst;
 
+	int maxIndex = startIndex + numEntities;
+	for (int i = startIndex; i < maxIndex; ++i)
+	{
+		Entity* entity = entities[i];
+		
+		int x = entity->position.x + entity->velocity.x;
+		int y = entity->position.y + entity->velocity.y;
+
+		int index = ArrayAccessHelper::GetChunkIndex( y * physicsComp->m_MapBufferWidth + x );
+
+		if (physicsComp->m_NavBuffer[index])
+		{
+			entity->velocity.x = 0;
+			entity->velocity.y = 0;
+
+			entity->position.x = x;
+			entity->position.y = y;
+		}
+	}
 }

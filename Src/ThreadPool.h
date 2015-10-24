@@ -15,26 +15,28 @@ class JobDesc
 	//typedef void(*Func)(void*, int);
 
 	void* m_ObjectInst;
-	void(*m_Func)(void*, DataType*, int, int);
+	void(*m_Func)(void*, DataType**, int, int, double);
 	DataType* m_DataSet;
 	int m_StartIndex;
 	int m_Length;
+	float m_DeltaTime;
 
 public:
 	JobDesc() = default;
 
-	JobDesc(void* objectInst, void(*func)(void*, DataType*, int, int), DataType* dataSet, int startIndex, int length)
+	JobDesc( void* objectInst, void(*func)(void*, DataType**, int, int, float), DataType** dataSet, int startIndex, int length, float deltaTime )
 		:	m_ObjectInst(objectInst),
 			m_Func(func),
 			m_DataSet(dataSet),
 			m_StartIndex(startIndex),
-			m_Length(length)
+			m_Length(length),
+			m_DeltaTime(deltaTime)
 	{}
 
 	// Calling this function will run the function based on the description provided.
 	void Execute()
 	{
-		(*m_Func)(m_ObjectInst, m_DataSet, m_StartIndex, m_Length);
+		(*m_Func)(m_ObjectInst, m_DataSet, m_StartIndex, m_Length, m_DeltaTime);
 	}
 };
 

@@ -13,19 +13,24 @@
   <ItemGroup>
     <ClCompile Include="..\Src\AIManager.cpp" />
     <ClCompile Include="..\Src\Common.cpp" />
+    <ClCompile Include="..\Src\Enemy.cpp" />
     <ClCompile Include="..\Src\Engine.cpp" />
     <ClCompile Include="..\Src\main.cpp" />
     <ClCompile Include="..\Src\Physics.cpp" />
+    <ClCompile Include="..\Src\Player.cpp" />
     <ClCompile Include="..\Src\Render.cpp" />
     <ClCompile Include="..\Src\ResourceManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Src\AIManager.h" />
     <ClInclude Include="..\Src\Common.h" />
+    <ClInclude Include="..\Src\Enemy.h" />
     <ClInclude Include="..\Src\Engine.h" />
     <ClInclude Include="..\Src\Entity.h" />
     <ClInclude Include="..\Src\Graph.h" />
+    <ClInclude Include="..\Src\Math.h" />
     <ClInclude Include="..\Src\Physics.h" />
+    <ClInclude Include="..\Src\Player.h" />
     <ClInclude Include="..\Src\Render.h" />
     <ClInclude Include="..\Src\ResourceManager.h" />
     <ClInclude Include="..\Src\ThreadPool.h" />

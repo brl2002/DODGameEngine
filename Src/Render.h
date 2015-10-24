@@ -3,7 +3,9 @@
 #include "Entity.h"
 #include <mutex>
 
+////////////////////////////////////////////////////////////////////////////////////////
 // RenderComponent is responsible for rendering array of char to the console screen.
+///////////////////////////////////////////////////////////////////////////////////////
 class RenderComponent
 {
 	// Array of chars that will be rendered to the console screen.
@@ -40,12 +42,13 @@ public:
 	// @param entity Array of entities
 	// @param startIndex array index to start from
 	// @param numEntity How many entities are in the array
-	static void Update( void* renderComponentInst, Entity* entities, int startIndex, int numEntities );
+	// @param deltaTime time passed since the last frame update
+	static void Update( void* renderComponentInst, Entity** entities, int startIndex, int numEntities, float deltaTime );
 
 	// Renders render buffer to the console screen
 	void Render();
 
-	void Debug(Entity* entities, int startIndex, int numEntities);
+	void Debug(Entity** entities, int startIndex, int numEntities);
 
 protected:
 	inline int PositionToArrayIndex( int x, int y ) { return y * (m_MapBufferWidth + 1) + x; }

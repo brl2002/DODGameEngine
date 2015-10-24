@@ -2,9 +2,11 @@
 
 #include "Entity.h"
 
+////////////////////////////////////////////////////////////////////////////////////////////////
 // PhysicsComponent is responsible for moving entities or characters and making sure that
 // things are not occupying same space at any given time. Users are expected to allocate
 // nav buffer and passed to PhysicsComponent during construction.
+///////////////////////////////////////////////////////////////////////////////////////////////
 class PhysicsComponent
 {
 	// Array of bool, where a single bool value represents whether or not
@@ -47,5 +49,6 @@ public:
 	// @param entity Array of entities
 	// @param startIndex array index to start from
 	// @param numEntity How many entities are in the array
-	static void Update( void* physicsComponentInst, Entity* entities, int startIndex, int numEntities );
+	// @param deltaTime time passed since the last frame update
+	static void Update( void* physicsComponentInst, Entity** entities, int startIndex, int numEntities, float deltaTime );
 };
