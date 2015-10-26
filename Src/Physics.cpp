@@ -29,18 +29,15 @@ void PhysicsComponent::Update( void* physicsComponentInst, Entity** entities, in
 	{
 		Entity* entity = entities[i];
 		
-		int x = entity->position.x + entity->velocity.x;
-		int y = entity->position.y + entity->velocity.y;
+		entity->position.x += entity->velocity.x * deltaTime;
+		entity->position.y += entity->velocity.y * deltaTime;
 
-		int index = ArrayAccessHelper::GetChunkIndex( y * physicsComp->m_MapBufferWidth + x );
+		//int index = ArrayAccessHelper::GetChunkIndex( y * physicsComp->m_MapBufferWidth + x );
 
-		if (physicsComp->m_NavBuffer[index])
-		{
-			entity->velocity.x = 0;
-			entity->velocity.y = 0;
-
-			entity->position.x = x;
-			entity->position.y = y;
-		}
+		//if (physicsComp->m_NavBuffer[index])
+		//{
+		//	entity->position.x = x;
+		//	entity->position.y = y;
+		//}
 	}
 }

@@ -26,6 +26,8 @@ public:
 
 	inline bool ShouldFindPath() { return m_ShouldFindPath; }
 
+	inline void SetShouldFindPath(bool shouldFindPath) { m_ShouldFindPath = shouldFindPath; }
+
 	inline void SetTarget(Entity* entity) { m_Target = entity; }
 
 	inline Entity* GetTarget() { return m_Target; }

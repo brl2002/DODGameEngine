@@ -16,15 +16,17 @@ Enemy::~Enemy()
 
 void Enemy::Update( float deltaTime )
 {
+	if (path.size() == 0) return;
+
 	// Get chunk index of current segment of path.
 	int chunkIndex = path[m_CurrentPathIndex]->GetIndex();
 
 	// Get x and y position of current segment based on its chunk index.
-	int targetXPosition = ArrayAccessHelper::GetSimpleColumnIndex(chunkIndex);
-	int targetYPosition = ArrayAccessHelper::GetSimpleRowIndex(chunkIndex);
+	Vector2D targetPosition = Vector2D( ArrayAccessHelper::GetSimpleColumnIndex( chunkIndex ),
+											ArrayAccessHelper::GetSimpleRowIndex( chunkIndex ) );
 
 	//Check if we are close to enemy's target position, and if it is clamp the position value to it.
-	//if ()
+	if (Math::Distance( position, targetPosition ) < 0.1)
 	{
 		// If current path index is less than last index of path then increment it.
 		if (m_CurrentPathIndex < (path.size() - 1)) ++m_CurrentPathIndex;
@@ -33,11 +35,11 @@ void Enemy::Update( float deltaTime )
 		chunkIndex = path[m_CurrentPathIndex]->GetIndex();
 
 		// Set the x and y position based on enemy's current target segment's chunk index.
-		targetXPosition = ArrayAccessHelper::GetSimpleColumnIndex(chunkIndex);
-		targetYPosition = ArrayAccessHelper::GetSimpleRowIndex(chunkIndex);
+		targetPosition.x = ArrayAccessHelper::GetSimpleColumnIndex( chunkIndex );
+		targetPosition.y = ArrayAccessHelper::GetSimpleRowIndex( chunkIndex );
 
 		// Get displacement vector from enemy's current position to target position.
-		Vector2D displacement = Vector2D( targetXPosition - position.x, targetYPosition - position.y );
+		Vector2D displacement = Vector2D( targetPosition.x - position.x, targetPosition.y - position.y );
 
 		// Normalize the displacement value.
 		displacement = Math::Normalize( displacement );

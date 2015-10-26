@@ -48,7 +48,7 @@ void AIManager::Update( void* aiManagerInst, Entity** entities, int startIndex, 
 		//enemy->Update( deltaTime );
 
 		//if (enemy->GetWaitTime() > 1.0f && enemy->GetTargetSegment() != targetSegment)
-		if (enemy->GetTargetSegment() != targetSegment)
+		if (enemy->ShouldFindPath() && enemy->GetTargetSegment() != targetSegment)
 		{
 			//enemy->ResetWaitTime();
 
@@ -60,6 +60,8 @@ void AIManager::Update( void* aiManagerInst, Entity** entities, int startIndex, 
 			enemy->path = ReconstructPath( currentSegment, targetSegment, checkedSegments );
 
 			enemy->SetTargetSegment( targetSegment );
+
+			enemy->SetShouldFindPath(false);
 		}
 	}
 }

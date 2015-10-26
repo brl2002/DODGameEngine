@@ -41,7 +41,7 @@ Engine::Engine()
 	m_AIManager = new AIManager( m_NavBuffer, width, height );
 	m_AIManager->SetupNavigationGraph( segmentWidth, segmentHeight );
 
-	m_Entities = new Entity*[4] { new Player( 'P' ), new Enemy( 'X', 5 ), new Enemy( 'X', 5 ), new Enemy( 'X', 5 ) };
+	m_Entities = new Entity*[4] { new Player( 'P' ), new Enemy( 'X', 50 ), new Enemy( 'X', 50 ), new Enemy( 'X', 50 ) };
 
 	m_Entities[0]->position.x = 20;
 	m_Entities[0]->position.y = 10;
@@ -105,14 +105,17 @@ void Engine::Run()
 
 		if (deltaTime > 0.0001)
 		{
-			//AIManager::Update(m_AIManager, m_Entities, 1, 3, deltaTime);
+			AIManager::Update(m_AIManager, m_Entities, 1, 3, deltaTime);
 
 			renderTime += deltaTime;
 
 			// Attemp to render at specific frames per second.
 			if (renderTime > 0.0167)
 			{
-				renderTime = 0;
+				for (int i = 1; i < 4; ++i)
+				{
+					m_Entities[i]->Update(renderTime);
+				}
 
 				PhysicsComponent::Update(m_PhysicsComponent, m_Entities, 0, 4, deltaTime);
 
@@ -128,6 +131,8 @@ void Engine::Run()
 
 				// Render.
 				m_RenderComponent->Render();
+
+				renderTime = 0;
 			}
 
 			// Capture current time to be used for calculating frame time later.

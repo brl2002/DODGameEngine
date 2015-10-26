@@ -9,8 +9,10 @@ class Entity
 	char m_RenderCharacter;
 
 public:
-	Entity( char renderCharacter )
-		:	m_RenderCharacter(renderCharacter)
+	Entity(char renderCharacter)
+		:	m_RenderCharacter(renderCharacter),
+			position(Vector2D()),
+			velocity(Vector2D())
 	{}
 
 	inline char GetChar() { return m_RenderCharacter; }
