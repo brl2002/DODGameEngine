@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Src\AIManager.cpp" />
+    <ClCompile Include="..\Src\Behavior.cpp" />
     <ClCompile Include="..\Src\Common.cpp" />
     <ClCompile Include="..\Src\Enemy.cpp" />
     <ClCompile Include="..\Src\Engine.cpp" />
@@ -23,11 +24,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Src\AIManager.h" />
+    <ClInclude Include="..\Src\Behavior.h" />
     <ClInclude Include="..\Src\Common.h" />
     <ClInclude Include="..\Src\Enemy.h" />
     <ClInclude Include="..\Src\Engine.h" />
     <ClInclude Include="..\Src\Entity.h" />
     <ClInclude Include="..\Src\Graph.h" />
+    <ClInclude Include="..\Src\ITask.h" />
     <ClInclude Include="..\Src\Math.h" />
     <ClInclude Include="..\Src\Physics.h" />
     <ClInclude Include="..\Src\Player.h" />
