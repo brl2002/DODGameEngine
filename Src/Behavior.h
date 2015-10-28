@@ -3,23 +3,12 @@
 #include <vector>
 #include "ITask.h"
 
-/////////////////////////////////////////////////////////////////////
-// Class responsible for doing AI related tasks. Holds list of tasks
-// and processes them in order and in circular fashion.
-/////////////////////////////////////////////////////////////////////
-class Behavior
+class ITask;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+// Struct that describes behavior of AI depending on tasks assigned to it.
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+struct Behavior
 {
-	std::vector<ITask*> m_Tasks;
-
-	int m_CurrentTaskIndex;
-
-public:
-	Behavior();
-
-	virtual ~Behavior();
-
-	// Perform current AI task.
-	void DoTask();
-
-	inline void AddTask(ITask* task) { m_Tasks.push_back( task ); }
+	std::vector<ITask*> tasks;
 };

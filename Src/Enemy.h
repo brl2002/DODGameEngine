@@ -1,14 +1,14 @@
 #pragma once
 
 #include "Entity.h"
+#include "Behavior.h"
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Sub-class of Entity, AI controlled entity and managed by AIManager.
 /////////////////////////////////////////////////////////////////////////////////////////////
 class Enemy : public Entity
 {
 	Entity* m_Target;
-
-	int m_CurrentPathIndex;
 
 	bool m_ShouldFindPath;
 
@@ -18,6 +18,12 @@ class Enemy : public Entity
 
 public:
 	std::vector<Segment*> path;
+
+	Behavior behavior;
+
+	int currentPathIndex;
+
+	int currentTaskIndex;
 
 public:
 	Enemy( char renderCharacter, float speed );
@@ -35,6 +41,8 @@ public:
 	inline void SetTargetSegment(Segment* segment) { m_LastTargetSegment = segment; }
 
 	inline Segment* GetTargetSegment() { return m_LastTargetSegment; }
+
+	inline float GetSpeed() { return m_Speed; }
 
 	void Update( float deltaTime );
 };

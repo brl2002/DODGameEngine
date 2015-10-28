@@ -3,6 +3,7 @@
 #include "Render.h"
 #include "Physics.h"
 #include "AIManager.h"
+#include "Game.h"
 #include "Entity.h"
 #include "ThreadPool.h"
 
@@ -19,6 +20,8 @@ class Engine
 	PhysicsComponent* m_PhysicsComponent;
 
 	AIManager* m_AIManager;
+
+	Game* m_Game;
 
 	Entity** m_Entities;
 

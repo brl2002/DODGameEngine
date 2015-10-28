@@ -41,6 +41,8 @@ Engine::Engine()
 	m_AIManager = new AIManager( m_NavBuffer, width, height );
 	m_AIManager->SetupNavigationGraph( segmentWidth, segmentHeight );
 
+	m_Game = new Game();
+
 	m_Entities = new Entity*[4] { new Player( 'P' ), new Enemy( 'X', 50 ), new Enemy( 'X', 50 ), new Enemy( 'X', 50 ) };
 
 	m_Entities[0]->position.x = 20;
@@ -57,6 +59,7 @@ Engine::Engine()
 	{
 		Enemy* enemy = (Enemy*)m_Entities[i];
 		enemy->SetTarget(m_Entities[0]);
+		m_Game->BindTask(0, enemy);
 	}
 }
 
@@ -70,6 +73,7 @@ Engine::~Engine()
 	delete m_RenderComponent;
 	delete m_PhysicsComponent;
 	delete m_AIManager;
+	delete m_Game;
 
 	delete[] m_Entities;
 
@@ -112,10 +116,7 @@ void Engine::Run()
 			// Attemp to render at specific frames per second.
 			if (renderTime > 0.0167)
 			{
-				for (int i = 1; i < 4; ++i)
-				{
-					m_Entities[i]->Update(renderTime);
-				}
+				Game::Update(m_Game, m_Entities, 0, 4, deltaTime);
 
 				PhysicsComponent::Update(m_PhysicsComponent, m_Entities, 0, 4, deltaTime);
 
