@@ -43,7 +43,7 @@ Engine::Engine()
 
 	m_Game = new Game();
 
-	m_Entities = new Entity*[4] { new Player( 'P' ), new Enemy( 'X', 50 ), new Enemy( 'X', 50 ), new Enemy( 'X', 50 ) };
+	m_Entities = new Entity*[4] { new Player( 'P' ), new Enemy( 'X', 10 ), new Enemy( 'X', 10 ), new Enemy( 'X', 10 ) };
 
 	m_Entities[0]->position.x = 20;
 	m_Entities[0]->position.y = 10;
