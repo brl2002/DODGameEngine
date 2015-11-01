@@ -4,7 +4,7 @@
 #include "Behavior.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-// Sub-class of Entity, AI controlled entity and managed by AIManager.
+// Sub-class of Entity, AI controlled entity.
 /////////////////////////////////////////////////////////////////////////////////////////////
 class Enemy : public Entity
 {
@@ -15,6 +15,10 @@ class Enemy : public Entity
 	float m_Speed;
 
 	Segment* m_LastTargetSegment;
+
+	float m_CheckPathRate;
+
+	float m_CurrentCheckPathTime;
 
 public:
 	std::vector<Segment*> path;
@@ -38,9 +42,9 @@ public:
 
 	inline Entity* GetTarget() { return m_Target; }
 
-	inline void SetTargetSegment(Segment* segment) { m_LastTargetSegment = segment; }
+	inline void SetLastTargetSegment(Segment* segment) { m_LastTargetSegment = segment; }
 
-	inline Segment* GetTargetSegment() { return m_LastTargetSegment; }
+	inline Segment* GetLastTargetSegment() { return m_LastTargetSegment; }
 
 	inline float GetSpeed() { return m_Speed; }
 

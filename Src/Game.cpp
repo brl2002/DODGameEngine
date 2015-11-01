@@ -28,7 +28,8 @@ void Game::Update( void* gameInst, Entity** entities, int startIndex, int numEnt
 	for (int i = startIndex; i < maxIndex; ++i)
 	{
 		Enemy* enemy = dynamic_cast<Enemy*>(entities[i]);
-		if ( enemy && (enemy->behavior.tasks[enemy->currentTaskIndex])->DoTask(enemy) )
+
+		if ( enemy && (enemy->behavior.tasks[enemy->currentTaskIndex])->DoTask( enemy, deltaTime ) )
 		{
 			enemy->currentTaskIndex = (enemy->currentTaskIndex + 1) % enemy->behavior.tasks.size();
 		}

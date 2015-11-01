@@ -14,16 +14,18 @@ bool MoveToTask::DoTask( Enemy* enemy, float deltaTime )
 	Vector2D currentIndexPosition = Vector2D( ArrayAccessHelper::GetSimpleColumnIndex( chunkIndex ),
 													ArrayAccessHelper::GetSimpleRowIndex( chunkIndex ) );
 
-	//Check if we are close to enemy's target position, and if it is clamp the position value to it.
+	//Check if we are close to current position enemy moving towards.
 	if (Math::Distance( enemy->position, currentIndexPosition ) < 0.1)
 	{
-		// If incremented path index is greater than the last index.
-		if (++currentPathIndex == enemy->path.size())
+		// If path index is greater (is not less) than the last index.
+		if ( !(currentPathIndex < enemy->path.size() - 1) )
 		{
 			// Then set the path index back to zero and notify that we are complete with the task.
 			enemy->currentPathIndex = 0;
 			return true;
 		}
+
+		enemy->currentPathIndex = currentPathIndex + 1;
 
 		// Get index of next segment in the path.
 		chunkIndex = enemy->path[currentPathIndex]->GetIndex();
