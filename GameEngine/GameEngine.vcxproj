@@ -16,6 +16,7 @@
     <ClCompile Include="..\Src\Enemy.cpp" />
     <ClCompile Include="..\Src\Engine.cpp" />
     <ClCompile Include="..\Src\Game.cpp" />
+    <ClCompile Include="..\Src\Input.cpp" />
     <ClCompile Include="..\Src\main.cpp" />
     <ClCompile Include="..\Src\MoveToTask.cpp" />
     <ClCompile Include="..\Src\Physics.cpp" />
@@ -32,6 +33,7 @@
     <ClInclude Include="..\Src\Entity.h" />
     <ClInclude Include="..\Src\Game.h" />
     <ClInclude Include="..\Src\Graph.h" />
+    <ClInclude Include="..\Src\Input.h" />
     <ClInclude Include="..\Src\ITask.h" />
     <ClInclude Include="..\Src\Math.h" />
     <ClInclude Include="..\Src\MoveToTask.h" />
