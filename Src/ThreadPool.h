@@ -19,12 +19,12 @@ class JobDesc
 	DataType* m_DataSet;
 	int m_StartIndex;
 	int m_Length;
-	float m_DeltaTime;
+	double m_DeltaTime;
 
 public:
 	JobDesc() = default;
 
-	JobDesc( void* objectInst, void(*func)(void*, DataType**, int, int, float), DataType** dataSet, int startIndex, int length, float deltaTime )
+	JobDesc( void* objectInst, void(*func)(void*, DataType**, int, int, double), DataType** dataSet, int startIndex, int length, double deltaTime )
 		:	m_ObjectInst(objectInst),
 			m_Func(func),
 			m_DataSet(dataSet),

@@ -20,7 +20,7 @@ PhysicsComponent::~PhysicsComponent()
 
 }
 
-void PhysicsComponent::Update( void* physicsComponentInst, Entity** entities, int startIndex, int numEntities, float deltaTime )
+void PhysicsComponent::Update( void* physicsComponentInst, Entity** entities, int startIndex, int numEntities, double deltaTime )
 {
 	PhysicsComponent* physicsComp = (PhysicsComponent*)physicsComponentInst;
 

@@ -22,7 +22,7 @@ AIManager::~AIManager()
 	delete m_MapGraph;
 }
 
-void AIManager::Update( void* aiManagerInst, Entity** entities, int startIndex, int numEntities, float deltaTime )
+void AIManager::Update( void* aiManagerInst, Entity** entities, int startIndex, int numEntities, double deltaTime )
 {
 	// Cast to AIManager pointer for us to use.
 	AIManager* aiManager = (AIManager*)aiManagerInst;

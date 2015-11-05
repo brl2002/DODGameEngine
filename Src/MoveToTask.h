@@ -5,5 +5,5 @@
 class MoveToTask : public ITask
 {
 public:
-	bool DoTask( Enemy* enemy, float deltaTime );
+	bool DoTask( Enemy* enemy, double deltaTime );
 };

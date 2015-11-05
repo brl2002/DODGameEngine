@@ -17,7 +17,7 @@ public:
 
 	inline char GetChar() { return m_RenderCharacter; }
 
-	virtual void Update( float deltaTime ) = 0;
+	virtual void Update( double deltaTime ) = 0;
 
 	Vector2D position;
 	Vector2D velocity;

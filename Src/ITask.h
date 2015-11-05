@@ -13,5 +13,5 @@ public:
 	// Performs AI related task and returns a boolean value specifying
 	// whether the task is complete or not.
 	// True = task is complete, False = task is incomplete.
-	virtual bool DoTask( Enemy* enemy, float deltaTime ) = 0;
+	virtual bool DoTask( Enemy* enemy, double deltaTime ) = 0;
 };

@@ -1,7 +1,7 @@
 #include "MoveToTask.h"
 #include "Math.h"
 
-bool MoveToTask::DoTask( Enemy* enemy, float deltaTime )
+bool MoveToTask::DoTask( Enemy* enemy, double deltaTime )
 {
 	if (enemy->path.size() == 0) return true;
 
@@ -15,7 +15,7 @@ bool MoveToTask::DoTask( Enemy* enemy, float deltaTime )
 													ArrayAccessHelper::GetSimpleRowIndex( chunkIndex ) );
 
 	//Check if we are close to current position enemy moving towards.
-	if (Math::Distance( enemy->position, currentIndexPosition ) < 0.5)
+	if (Math::Distance( enemy->position, currentIndexPosition ) < 0.3f)
 	{
 		// If path index is greater (is not less) than the last index.
 		if ( !(currentPathIndex < enemy->path.size() - 1) )

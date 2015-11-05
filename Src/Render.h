@@ -43,7 +43,7 @@ public:
 	// @param startIndex array index to start from
 	// @param numEntity How many entities are in the array
 	// @param deltaTime time passed since the last frame update
-	static void Update( void* renderComponentInst, Entity** entities, int startIndex, int numEntities, float deltaTime );
+	static void Update( void* renderComponentInst, Entity** entities, int startIndex, int numEntities, double deltaTime );
 
 	// Renders render buffer to the console screen
 	void Render();

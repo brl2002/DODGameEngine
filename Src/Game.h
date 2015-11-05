@@ -16,5 +16,5 @@ public:
 
 	void BindTask( int taskIndex, Entity* entity );
 
-	static void Update( void* gameInst, Entity** entities, int startIndex, int numEntities, float deltaTime );
+	static void Update( void* gameInst, Entity** entities, int startIndex, int numEntities, double deltaTime );
 };

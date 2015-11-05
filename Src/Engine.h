@@ -6,6 +6,9 @@
 #include "Game.h"
 #include "Entity.h"
 #include "ThreadPool.h"
+#include <memory>
+
+#define TIME_PER_FRAME 1.0f / 60.0f
 
 //////////////////////////////////////////////////////////////////////////////////
 // Engine class is responsible for managing the entire game system
@@ -15,13 +18,13 @@ class Engine
 {
 	//ThreadPool<Entity>* m_ThreadPool;
 
-	RenderComponent* m_RenderComponent;
+	std::shared_ptr<RenderComponent> m_RenderComponent;
 
-	PhysicsComponent* m_PhysicsComponent;
+	std::shared_ptr<PhysicsComponent> m_PhysicsComponent;
 
-	AIManager* m_AIManager;
+	std::shared_ptr<AIManager> m_AIManager;
 
-	Game* m_Game;
+	std::shared_ptr<Game> m_Game;
 
 	Entity** m_Entities;
 
@@ -45,5 +48,7 @@ public:
 	void Stop();
 
 protected:
+	void ProcessInput();
 
+	void Update( double deltaTime );
 };

@@ -50,5 +50,5 @@ public:
 	// @param startIndex array index to start from
 	// @param numEntity How many entities are in the array
 	// @param deltaTime time passed since the last frame update
-	static void Update( void* physicsComponentInst, Entity** entities, int startIndex, int numEntities, float deltaTime );
+	static void Update( void* physicsComponentInst, Entity** entities, int startIndex, int numEntities, double deltaTime );
 };

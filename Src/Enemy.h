@@ -48,5 +48,5 @@ public:
 
 	inline float GetSpeed() { return m_Speed; }
 
-	void Update( float deltaTime );
+	void Update( double deltaTime );
 };

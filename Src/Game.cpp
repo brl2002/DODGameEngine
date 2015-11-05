@@ -20,7 +20,7 @@ void Game::BindTask( int taskIndex, Entity* entity )
 	enemy->behavior.tasks.push_back(m_Tasks[taskIndex]);
 }
 
-void Game::Update( void* gameInst, Entity** entities, int startIndex, int numEntities, float deltaTime )
+void Game::Update( void* gameInst, Entity** entities, int startIndex, int numEntities, double deltaTime )
 {
 	Game* game = (Game*)gameInst;
 

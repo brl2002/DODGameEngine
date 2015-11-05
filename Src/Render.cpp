@@ -5,7 +5,7 @@
 #include <string>
 
 // Constructor.
-RenderComponent::RenderComponent(char* renderBuffer, char* mapBuffer, int mapBufferWidth, int mapBufferHeight)
+RenderComponent::RenderComponent( char* renderBuffer, char* mapBuffer, int mapBufferWidth, int mapBufferHeight )
 	:	m_RenderableBufferArray(renderBuffer),
 		m_MapBufferArray(mapBuffer),
 		m_MapBufferWidth(mapBufferWidth),
@@ -30,7 +30,7 @@ void RenderComponent::Clear()
 	memcpy(m_RenderableBufferArray, m_MapBufferArray, m_TotalBufferSize);
 }
 
-void RenderComponent::Update(void* renderComponentInst, Entity** entities, int startIndex, int numEntities, float deltaTime)
+void RenderComponent::Update( void* renderComponentInst, Entity** entities, int startIndex, int numEntities, double deltaTime )
 {
 	// Cast void pointer variable to RenderComponent pointer.
 	RenderComponent* renderComponent = (RenderComponent*)renderComponentInst;
@@ -51,7 +51,7 @@ void RenderComponent::Render()
 	printf(m_RenderableBufferArray);
 }
 
-void RenderComponent::Debug(Entity** entities, int startIndex, int numEntities)
+void RenderComponent::Debug( Entity** entities, int startIndex, int numEntities )
 {
 	//for (int i = startIndex; i < numEntities; ++i)
 	//{

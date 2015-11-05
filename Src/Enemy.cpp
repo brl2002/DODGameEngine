@@ -16,7 +16,7 @@ Enemy::Enemy( char renderCharacter, float speed )
 Enemy::~Enemy()
 {}
 
-void Enemy::Update( float deltaTime )
+void Enemy::Update( double deltaTime )
 {
 	m_CurrentCheckPathTime += deltaTime;
 

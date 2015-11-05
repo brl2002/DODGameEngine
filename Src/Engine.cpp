@@ -30,20 +30,26 @@ Engine::Engine()
 	//m_ThreadPool = new ThreadPool<Entity>();
 
 	// Do all inititialization of components here
-	m_RenderComponent = new RenderComponent(
-		ResourceManager::getInstance().AllocateMapBuffer(),
-		ResourceManager::getInstance().AllocateMapBuffer(),
-		width, height );
 
-	m_PhysicsComponent = new PhysicsComponent(
+	m_RenderComponent = std::make_shared<RenderComponent>(
+		ResourceManager::getInstance().AllocateMapBuffer(),
+		ResourceManager::getInstance().AllocateMapBuffer(),
+		width, height);
+
+	/*m_RenderComponent = new RenderComponent(
+		ResourceManager::getInstance().AllocateMapBuffer(),
+		ResourceManager::getInstance().AllocateMapBuffer(),
+		width, height );*/
+
+	m_PhysicsComponent = std::make_shared<PhysicsComponent>(
 		m_NavBuffer, width, height, segmentWidth, segmentHeight );
 
-	m_AIManager = new AIManager( m_NavBuffer, width, height );
+	m_AIManager = std::make_shared<AIManager>( m_NavBuffer, width, height );
 	m_AIManager->SetupNavigationGraph( segmentWidth, segmentHeight );
 
-	m_Game = new Game();
+	m_Game = std::make_shared<Game>();
 
-	m_Entities = new Entity*[4] { new Player( 'P' ), new Enemy( 'X', 10 ), new Enemy( 'X', 10 ), new Enemy( 'X', 10 ) };
+	m_Entities = new Entity*[4] { new Player( 'P' ), new Enemy( 'X', 5 ), new Enemy( 'X', 5 ), new Enemy( 'X', 5 ) };
 
 	m_Entities[0]->position.x = 20;
 	m_Entities[0]->position.y = 10;
@@ -70,11 +76,6 @@ Engine::~Engine()
 
 	//delete m_ThreadPool;
 
-	delete m_RenderComponent;
-	delete m_PhysicsComponent;
-	delete m_AIManager;
-	delete m_Game;
-
 	delete[] m_Entities;
 
 	delete[] m_NavBuffer;
@@ -85,61 +86,66 @@ void Engine::Run()
 	m_IsRunning = true;
 
 	// Declare frame time calculation related variables.
-	auto currentTime = EngineClock::now();
 	auto lastTime = EngineClock::now();
-	float renderTime = 0;
+	double deltaTime = TIME_PER_FRAME;
 
 	// Main loop.
 	while (m_IsRunning)
 	{
+		ProcessInput();
+
+		Update( deltaTime );
+
 		// Frame time calculation.
-		currentTime = EngineClock::now();
-		float deltaTime = std::chrono::duration<float>( currentTime - lastTime ).count();
+		auto currentTime = EngineClock::now();
+		deltaTime = std::chrono::duration<float>( currentTime - lastTime ).count();
 
-		// Processing inputs prior to doing any updates.
-		if (_kbhit())
+		if (deltaTime > 1.0f)
 		{
-			int key_code = _getch();
-
-			if (key_code == 100)
-			{
-				m_IsRunning = false;
-			}
+			deltaTime = TIME_PER_FRAME;
 		}
 
-		if (deltaTime > 0.0001)
+		lastTime = currentTime;
+	}
+}
+
+void Engine::ProcessInput()
+{
+	// Processing inputs prior to doing any updates.
+	if (_kbhit())
+	{
+		int key_code = _getch();
+
+		if (key_code == 100)
 		{
-			AIManager::Update(m_AIManager, m_Entities, 1, 3, deltaTime);
-
-			renderTime += deltaTime;
-
-			// Attemp to render at specific frames per second.
-			if (renderTime > 0.0167)
-			{
-				Game::Update(m_Game, m_Entities, 0, 4, deltaTime);
-
-				PhysicsComponent::Update(m_PhysicsComponent, m_Entities, 0, 4, deltaTime);
-
-				// Clear screen first.
-				m_RenderComponent->Clear();
-
-				//m_RenderComponent->Debug(m_Entities, 1, 4);
-
-				RenderComponent::Update(m_RenderComponent, m_Entities, 0, 4, renderTime);
-				/*m_ThreadPool->AddNewJob(JobDesc<Entity>(m_RenderComponent, &RenderComponent::Update, m_Entities, 0, 2));
-				m_ThreadPool->AddNewJob(JobDesc<Entity>(m_RenderComponent, &RenderComponent::Update, m_Entities, 2, 2));
-				m_ThreadPool->Wait();*/
-
-				// Render.
-				m_RenderComponent->Render();
-
-				renderTime = 0;
-			}
-
-			// Capture current time to be used for calculating frame time later.
-			lastTime = EngineClock::now();
+			m_IsRunning = false;
 		}
 	}
+}
+
+void Engine::Update(double deltaTime)
+{
+	AIManager::Update(m_AIManager.get(), m_Entities, 1, 3, deltaTime);
+
+	Game::Update(m_Game.get(), m_Entities, 0, 4, deltaTime);
+
+	PhysicsComponent::Update(m_PhysicsComponent.get(), m_Entities, 0, 4, deltaTime);
+
+	// Clear screen first.
+	m_RenderComponent->Clear();
+
+	//m_RenderComponent->Debug(m_Entities, 1, 4);
+
+	RenderComponent::Update(m_RenderComponent.get(), m_Entities, 0, 4, deltaTime);
+	/*m_ThreadPool->AddNewJob(JobDesc<Entity>(m_RenderComponent, &RenderComponent::Update, m_Entities, 0, 2));
+	m_ThreadPool->AddNewJob(JobDesc<Entity>(m_RenderComponent, &RenderComponent::Update, m_Entities, 2, 2));
+	m_ThreadPool->Wait();*/
+
+	int64_t fps = 1 / deltaTime;
+	printf("FPS = %d Time = %f\n", fps, deltaTime);
+
+	// Render.
+	m_RenderComponent->Render();
 }
 
 void Engine::Stop()
