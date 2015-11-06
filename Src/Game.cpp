@@ -33,5 +33,9 @@ void Game::Update( void* gameInst, Entity** entities, int startIndex, int numEnt
 		{
 			enemy->currentTaskIndex = (enemy->currentTaskIndex + 1) % enemy->behavior.tasks.size();
 		}
+		else
+		{
+
+		}
 	}
 }

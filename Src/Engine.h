@@ -2,6 +2,7 @@
 
 #include "Render.h"
 #include "Physics.h"
+#include "Input.h"
 #include "AIManager.h"
 #include "Game.h"
 #include "Entity.h"
@@ -21,6 +22,8 @@ class Engine
 	std::shared_ptr<RenderComponent> m_RenderComponent;
 
 	std::shared_ptr<PhysicsComponent> m_PhysicsComponent;
+
+	std::shared_ptr<InputComponent> m_InputComponent;
 
 	std::shared_ptr<AIManager> m_AIManager;
 

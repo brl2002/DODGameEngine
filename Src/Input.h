@@ -1,17 +1,21 @@
 #pragma once
 
-class InputComponent
+enum class KeyCode
 {
-	bool* m_InputsDown;
+	KEY_W = 0x57,
+	KEY_S = 0x53,
+	KEY_A = 0x41,
+	KEY_D = 0x44
+};
+
+class Input
+{
+	static bool m_InputsDown[];
 
 public:
-	InputComponent();
+	static void Update( int keyCode );
 
-	virtual ~InputComponent();
+	static bool InputDown( KeyCode keyCode );
 
-	void Update();
-
-	bool InputDown();
-
-	bool InputUp();
+	static bool InputUp( KeyCode keyCode );
 };
