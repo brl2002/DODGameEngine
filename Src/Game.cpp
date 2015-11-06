@@ -1,4 +1,7 @@
 #include "Game.h"
+#include "Input.h"
+#include "Player.h"
+#include "Enemy.h"
 
 Game::Game()
 {
@@ -28,14 +31,42 @@ void Game::Update( void* gameInst, Entity** entities, int startIndex, int numEnt
 	for (int i = startIndex; i < maxIndex; ++i)
 	{
 		Enemy* enemy = dynamic_cast<Enemy*>(entities[i]);
+		Player* player = dynamic_cast<Player*>(entities[i]);
 
-		if ( enemy && (enemy->behavior.tasks[enemy->currentTaskIndex])->DoTask( enemy, deltaTime ) )
+		if (enemy)
 		{
-			enemy->currentTaskIndex = (enemy->currentTaskIndex + 1) % enemy->behavior.tasks.size();
+			if ( (enemy->behavior.tasks[enemy->currentTaskIndex])->DoTask( enemy, deltaTime ) )
+			{
+				enemy->currentTaskIndex = (enemy->currentTaskIndex + 1) % enemy->behavior.tasks.size();
+			}
+
+			enemy->Update( deltaTime );
 		}
-		else
+		else if (player)
 		{
+			float horizontalSpeed = 0;
+			float verticalSpeed = 0;
 
+			if (Input::InputDown(KeyCode::KEY_W))
+			{
+				verticalSpeed = -1;
+			}
+			else if (Input::InputDown(KeyCode::KEY_S))
+			{
+				verticalSpeed = 1;
+			}
+
+			if (Input::InputDown(KeyCode::KEY_D))
+			{
+				horizontalSpeed = 1;
+			}
+			else if (Input::InputDown(KeyCode::KEY_A))
+			{
+				horizontalSpeed = -1;
+			}
+
+			player->MoveVertically(verticalSpeed);
+			player->MoveHorizontally(horizontalSpeed);
 		}
 	}
 }

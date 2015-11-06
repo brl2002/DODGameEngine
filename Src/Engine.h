@@ -9,7 +9,7 @@
 #include "ThreadPool.h"
 #include <memory>
 
-#define TIME_PER_FRAME 1.0f / 60.0f
+#define TIME_PER_FRAME 1.0f / 30.0f
 
 //////////////////////////////////////////////////////////////////////////////////
 // Engine class is responsible for managing the entire game system
@@ -22,8 +22,6 @@ class Engine
 	std::shared_ptr<RenderComponent> m_RenderComponent;
 
 	std::shared_ptr<PhysicsComponent> m_PhysicsComponent;
-
-	std::shared_ptr<InputComponent> m_InputComponent;
 
 	std::shared_ptr<AIManager> m_AIManager;
 

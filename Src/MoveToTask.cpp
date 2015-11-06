@@ -15,7 +15,7 @@ bool MoveToTask::DoTask( Enemy* enemy, double deltaTime )
 													ArrayAccessHelper::GetSimpleRowIndex( chunkIndex ) );
 
 	//Check if we are close to current position enemy moving towards.
-	if (Math::Distance( enemy->position, currentIndexPosition ) < 0.3f)
+	if (Math::Distance( enemy->position, currentIndexPosition ) < 0.1f)
 	{
 		// If path index is greater (is not less) than the last index.
 		if ( !(currentPathIndex < enemy->path.size() - 1) )
@@ -26,6 +26,9 @@ bool MoveToTask::DoTask( Enemy* enemy, double deltaTime )
 		}
 
 		enemy->currentPathIndex = currentPathIndex + 1;
+
+		enemy->position.x = currentIndexPosition.x;
+		enemy->position.y = currentIndexPosition.y;
 
 		// Get index of next segment in the path.
 		chunkIndex = enemy->path[currentPathIndex]->GetIndex();

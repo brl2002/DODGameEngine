@@ -2,14 +2,17 @@
 
 bool Input::m_InputsDown[4] = { false, false, false, false };
 
-void Input::Update( int keyCode )
+void Input::Reset()
 {
 	// Resetting all input buffers.
 	for (int i = 0; i < 4; ++i)
 	{
 		m_InputsDown[i] = false;
 	}
+}
 
+void Input::Update( int keyCode )
+{
 	switch (keyCode)
 	{
 	case (int)KeyCode::KEY_W:

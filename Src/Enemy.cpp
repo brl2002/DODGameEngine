@@ -24,6 +24,6 @@ void Enemy::Update( double deltaTime )
 	{
 		m_CurrentCheckPathTime = 0;
 
-		//m_ShouldFindPath = true;
+		m_ShouldFindPath = true;
 	}
 }

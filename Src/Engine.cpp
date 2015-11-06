@@ -45,14 +45,12 @@ Engine::Engine()
 	m_PhysicsComponent = std::make_shared<PhysicsComponent>(
 		m_NavBuffer, width, height, segmentWidth, segmentHeight );
 
-	m_InputComponent = std::make_shared<InputComponent>();
-
 	m_AIManager = std::make_shared<AIManager>( m_NavBuffer, width, height );
 	m_AIManager->SetupNavigationGraph( segmentWidth, segmentHeight );
 
 	m_Game = std::make_shared<Game>();
 
-	m_Entities = new Entity*[4] { new Player( 'P' ), new Enemy( 'X', 5 ), new Enemy( 'X', 5 ), new Enemy( 'X', 5 ) };
+	m_Entities = new Entity*[4] { new Player( 'P', 70 ), new Enemy( 'X', 5 ), new Enemy( 'X', 5 ), new Enemy( 'X', 5 ) };
 
 	m_Entities[0]->position.x = 20;
 	m_Entities[0]->position.y = 10;
@@ -114,6 +112,8 @@ void Engine::Run()
 
 void Engine::ProcessInput()
 {
+	Input::Reset();
+
 	// Processing inputs prior to doing any updates.
 	if (_kbhit())
 	{
@@ -124,7 +124,7 @@ void Engine::ProcessInput()
 			m_IsRunning = false;
 		}
 
-		m_InputComponent->Update(key_code);
+		Input::Update(key_code);
 	}
 }
 
@@ -147,8 +147,8 @@ void Engine::Update(double deltaTime)
 	m_ThreadPool->Wait();*/
 
 	//deltaTime = deltaTime <= 0 ? TIME_PER_FRAME : deltaTime;
-	int fps = 1 / deltaTime;
-	printf("FPS = %d Time = %f\n", fps, deltaTime);
+	//int fps = 1 / deltaTime;
+	//printf("FPS = %d Time = %f\n", fps, deltaTime);
 
 	// Render.
 	m_RenderComponent->Render();

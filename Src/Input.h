@@ -13,6 +13,8 @@ class Input
 	static bool m_InputsDown[];
 
 public:
+	static void Reset();
+
 	static void Update( int keyCode );
 
 	static bool InputDown( KeyCode keyCode );
