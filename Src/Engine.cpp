@@ -50,7 +50,9 @@ Engine::Engine()
 
 	m_Game = std::make_shared<Game>();
 
-	m_Entities = new Entity*[4] { new Player( 'P', 70 ), new Enemy( 'X', 5 ), new Enemy( 'X', 5 ), new Enemy( 'X', 5 ) };
+	m_FPSUtil = std::make_unique<FPSUtility>();
+
+	m_Entities = new Entity*[4] { new Player( 'P', 10 ), new Enemy( 'X', 5 ), new Enemy( 'X', 5 ), new Enemy( 'X', 5 ) };
 
 	m_Entities[0]->position.x = 20;
 	m_Entities[0]->position.y = 10;
@@ -130,6 +132,8 @@ void Engine::ProcessInput()
 
 void Engine::Update(double deltaTime)
 {
+	m_FPSUtil->Update( deltaTime );
+
 	AIManager::Update( m_AIManager.get(), m_Entities, 1, 3, deltaTime );
 
 	Game::Update( m_Game.get(), m_Entities, 0, 4, deltaTime );
@@ -146,9 +150,7 @@ void Engine::Update(double deltaTime)
 	m_ThreadPool->AddNewJob(JobDesc<Entity>(m_RenderComponent, &RenderComponent::Update, m_Entities, 2, 2));
 	m_ThreadPool->Wait();*/
 
-	//deltaTime = deltaTime <= 0 ? TIME_PER_FRAME : deltaTime;
-	//int fps = 1 / deltaTime;
-	//printf("FPS = %d Time = %f\n", fps, deltaTime);
+	printf("FPS = %d\n", m_FPSUtil->GetFPS());
 
 	// Render.
 	m_RenderComponent->Render();

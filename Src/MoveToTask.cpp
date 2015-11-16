@@ -18,14 +18,10 @@ bool MoveToTask::DoTask( Enemy* enemy, double deltaTime )
 	if (Math::Distance( enemy->position, currentIndexPosition ) < 0.1f)
 	{
 		// If path index is greater (is not less) than the last index.
-		if ( !(currentPathIndex < enemy->path.size() - 1) )
+		if (currentPathIndex < enemy->path.size() - 1)
 		{
-			// Then set the path index back to zero and notify that we are complete with the task.
-			enemy->currentPathIndex = 0;
-			return true;
+			enemy->currentPathIndex = currentPathIndex + 1;
 		}
-
-		enemy->currentPathIndex = currentPathIndex + 1;
 
 		enemy->position.x = currentIndexPosition.x;
 		enemy->position.y = currentIndexPosition.y;

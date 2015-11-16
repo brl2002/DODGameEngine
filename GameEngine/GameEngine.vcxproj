@@ -15,6 +15,7 @@
     <ClCompile Include="..\Src\Common.cpp" />
     <ClCompile Include="..\Src\Enemy.cpp" />
     <ClCompile Include="..\Src\Engine.cpp" />
+    <ClCompile Include="..\Src\FPSUtility.cpp" />
     <ClCompile Include="..\Src\Game.cpp" />
     <ClCompile Include="..\Src\Input.cpp" />
     <ClCompile Include="..\Src\main.cpp" />
@@ -31,6 +32,7 @@
     <ClInclude Include="..\Src\Enemy.h" />
     <ClInclude Include="..\Src\Engine.h" />
     <ClInclude Include="..\Src\Entity.h" />
+    <ClInclude Include="..\Src\FPSUtility.h" />
     <ClInclude Include="..\Src\Game.h" />
     <ClInclude Include="..\Src\Graph.h" />
     <ClInclude Include="..\Src\Input.h" />

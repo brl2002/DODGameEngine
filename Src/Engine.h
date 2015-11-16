@@ -7,9 +7,10 @@
 #include "Game.h"
 #include "Entity.h"
 #include "ThreadPool.h"
+#include "FPSUtility.h"
 #include <memory>
 
-#define TIME_PER_FRAME 1.0f / 30.0f
+#define TIME_PER_FRAME 1.0f / 60.0f
 
 //////////////////////////////////////////////////////////////////////////////////
 // Engine class is responsible for managing the entire game system
@@ -26,6 +27,8 @@ class Engine
 	std::shared_ptr<AIManager> m_AIManager;
 
 	std::shared_ptr<Game> m_Game;
+
+	std::unique_ptr<FPSUtility> m_FPSUtil;
 
 	Entity** m_Entities;
 
