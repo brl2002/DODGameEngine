@@ -24,7 +24,7 @@ namespace Math
 		return sqrt( v.x * v.x + v.y * v.y );
 	}
 
-	Vector2D& Normalize( const Vector2D& vector )
+	inline Vector2D Normalize( const Vector2D& vector )
 	{
 		float length = Distance( vector );
 
@@ -41,5 +41,10 @@ namespace Math
 	inline bool IsApproximatelyEqual( float a, float b )
 	{
 		return abs( a - b ) < FLT_EPSILON;
+	}
+
+	inline float Clamp( float value, float min, float max )
+	{
+		return std::max( min, std::min( value, max ) );
 	}
 }
