@@ -1,5 +1,8 @@
 #include "Common.h"
 
+LARGE_INTEGER DevicePerformanceProfile::Device_Frequency = { 0 };
+bool DevicePerformanceProfile::DeviceFrequencyQuery = QueryPerformanceFrequency(&DevicePerformanceProfile::Device_Frequency);
+
 int ArrayAccessHelper::m_AddFactorTable[9] =
 {
 	-10,	-9,		-8,

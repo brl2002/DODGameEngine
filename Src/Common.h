@@ -26,9 +26,14 @@
 
 #pragma once
 
-#include <chrono>
+#define NOMINMAX
+#include <Windows.h>
 
-typedef std::chrono::high_resolution_clock EngineClock;
+namespace DevicePerformanceProfile
+{
+	extern LARGE_INTEGER Device_Frequency;
+	extern bool DeviceFrequencyQuery;
+}
 
 class Vector2D
 {

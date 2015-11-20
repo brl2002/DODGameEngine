@@ -2,6 +2,7 @@
 
 #include <conio.h>
 #include <ctype.h>
+#include <Windows.h>
 #include "Common.h"
 #include "ResourceManager.h"
 #include "Graph.h"
@@ -70,6 +71,11 @@ Engine::Engine()
 		enemy->SetTarget(m_Entities[0]);
 		m_Game->BindTask(0, enemy);
 	}
+
+	m_RenderProfiler = std::make_unique<Profiler<UpdateFunction>>();
+	m_PhysicsProfiler = std::make_unique<Profiler<UpdateFunction>>();
+	m_AIProfiler = std::make_unique<Profiler<UpdateFunction>>();
+	m_GameProfiler = std::make_unique<Profiler<UpdateFunction>>();
 }
 
 // Deconstructor
@@ -89,7 +95,9 @@ void Engine::Run()
 	m_IsRunning = true;
 
 	// Declare frame time calculation related variables.
-	auto lastTime = EngineClock::now();
+	LARGE_INTEGER lastTime, currentTime;
+	QueryPerformanceCounter(&lastTime);
+	QueryPerformanceCounter(&currentTime);
 	double deltaTime = TIME_PER_FRAME;
 
 	// Main loop.
@@ -100,8 +108,8 @@ void Engine::Run()
 		Update( deltaTime );
 
 		// Frame time calculation.
-		auto currentTime = EngineClock::now();
-		deltaTime = std::chrono::duration_cast<std::chrono::milliseconds>( currentTime - lastTime ).count() / 1000.0f;
+		QueryPerformanceCounter(&currentTime);
+		deltaTime = static_cast<double>( currentTime.QuadPart - lastTime.QuadPart ) / DevicePerformanceProfile::Device_Frequency.QuadPart;
 
 		if (deltaTime > 1.0f)
 		{
@@ -134,26 +142,60 @@ void Engine::Update(double deltaTime)
 {
 	m_FPSUtil->Update( deltaTime );
 
+#if _DEBUG
+	m_AIProfiler->Start();
+#endif
 	AIManager::Update( m_AIManager.get(), m_Entities, 1, 3, deltaTime );
+#if _DEBUG
+	m_AIProfiler->Capture();
+#endif
 
+#if _DEBUG
+	m_GameProfiler->Start();
+#endif
 	Game::Update( m_Game.get(), m_Entities, 0, 4, deltaTime );
+#if _DEBUG
+	m_GameProfiler->Capture();
+#endif
 
+#if _DEBUG
+	m_PhysicsProfiler->Start();
+#endif
 	PhysicsComponent::Update( m_PhysicsComponent.get(), m_Entities, 0, 4, deltaTime );
+#if _DEBUG
+	m_PhysicsProfiler->Capture();
+#endif
 
 	// Clear screen first.
 	m_RenderComponent->Clear();
 
 	//m_RenderComponent->Debug(m_Entities, 1, 4);
 
+#if _DEBUG
+	m_RenderProfiler->Start();
+#endif
 	RenderComponent::Update( m_RenderComponent.get(), m_Entities, 0, 4, deltaTime );
+#if _DEBUG
+	m_RenderProfiler->Capture();
+#endif
 	/*m_ThreadPool->AddNewJob(JobDesc<Entity>(m_RenderComponent, &RenderComponent::Update, m_Entities, 0, 2));
 	m_ThreadPool->AddNewJob(JobDesc<Entity>(m_RenderComponent, &RenderComponent::Update, m_Entities, 2, 2));
 	m_ThreadPool->Wait();*/
 
-	printf("FPS = %d\n", m_FPSUtil->GetFPS());
-
 	// Render.
 	m_RenderComponent->Render();
+
+	DisplayDebugInfo();
+}
+
+void Engine::DisplayDebugInfo()
+{
+	printf("\nPress 'q' to exit program...\n\nDebug:\n");
+	printf("FPS = %d\n", m_FPSUtil->GetFPS());
+	printf("AI Time = %f\n", m_AIProfiler->GetProfiledTime());
+	printf("Game Time = %f\n", m_GameProfiler->GetProfiledTime());
+	printf("Physics Time = %f\n", m_PhysicsProfiler->GetProfiledTime());
+	printf("Render Time = %f\n", m_RenderProfiler->GetProfiledTime());
 }
 
 void Engine::Stop()
