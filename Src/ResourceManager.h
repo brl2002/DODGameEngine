@@ -64,4 +64,6 @@ public:
 
 	// Get height of the map buffer.
 	inline int GetMapBufferHeight() { return m_Height; }
+
+	inline bool MapIsSet() { return bMapIsSet; }
 };

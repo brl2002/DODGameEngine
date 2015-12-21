@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Render.h"
 #include "Physics.h"
-#include "Input.h"
 #include "AIManager.h"
 #include "Game.h"
 #include "Entity.h"
 #include "ThreadPool.h"
 #include "FPSUtility.h"
 #include "Profiler.h"
+#include "Graphics\Render.h"
+#include "Graphics\Input.h"
 #include <memory>
 
 #define TIME_PER_FRAME 1.0f / 60.0f
@@ -49,23 +49,39 @@ class Engine
 
 	bool m_IsRunning;
 
+	LPCWSTR m_ApplicationName;
+
+	HINSTANCE m_hinstance;
+
+	HWND m_hwnd;
+
 public:
 	// Engine constructor, initializes all necessary components.
 	Engine();
 
 	// Engine destructor.
 	virtual ~Engine();
+	
+	bool Initialize();
 
 	// Function to start running the engine.
 	void Run();
 
 	// Stop running engine.
-	void Stop();
+	void ShutdownEngine();
+
+	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 
 protected:
+	void InitializeWindows(int& screenWidth, int& screenHeight);
+
 	void ProcessInput();
 
 	void Update( double deltaTime );
 
 	void DisplayDebugInfo();
 };
+
+static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+
+static Engine* EngineHandle = 0;

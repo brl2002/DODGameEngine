@@ -1,7 +1,5 @@
 #include "Engine.h"
 
-#include <conio.h>
-#include <ctype.h>
 #include <Windows.h>
 #include "Common.h"
 #include "ResourceManager.h"
@@ -12,8 +10,38 @@
 Engine::Engine()
 	:	m_IsRunning(false)
 {
+}
+
+// Deconstructor
+Engine::~Engine()
+{
+	// Deallocate any necessary variables for memory management.
+
+	//delete m_ThreadPool;
+
+	delete[] m_Entities;
+
+	delete[] m_NavBuffer;
+}
+
+bool Engine::Initialize()
+{
+	int screenWidth, screenHeight;
+	bool result;
+
+	// Initialize the width and height of the screen to zero before sending the variables into the function.
+	screenWidth = 0;
+	screenHeight = 0;
+
 	// Read a map file first.
-	m_IsInitializationSuccessful = ResourceManager::getInstance().ReadMapFile( "map.txt" );
+	result = ResourceManager::getInstance().ReadMapFile("map.txt");
+	if (!result)
+	{
+		return false;
+	}
+
+	// Initialize the windows api.
+	InitializeWindows(screenWidth, screenHeight);
 
 	int width = ResourceManager::getInstance().GetMapBufferWidth();
 	int height = ResourceManager::getInstance().GetMapBufferHeight();
@@ -24,36 +52,40 @@ Engine::Engine()
 	int numSegmentPerChunk = segmentWidth * segmentHeight;
 
 	// Preparing ArrayAccessHelper before using its methods.
-	ArrayAccessHelper::Setup( numSegmentPerChunk, chunkWidth, width, height, segmentWidth, segmentHeight );
+	ArrayAccessHelper::Setup(numSegmentPerChunk, chunkWidth, width, height, segmentWidth, segmentHeight);
 
 	// Allocate a navigation buffer based on the map read.
-	m_NavBuffer = ResourceManager::getInstance().AllocateNavBuffer( "x", segmentWidth, segmentHeight );
+	m_NavBuffer = ResourceManager::getInstance().AllocateNavBuffer("x", segmentWidth, segmentHeight);
 
 	//m_ThreadPool = new ThreadPool<Entity>();
 
 	// Do all inititialization of components here
 
-	m_RenderComponent = std::make_shared<RenderComponent>(
-		ResourceManager::getInstance().AllocateMapBuffer(),
-		ResourceManager::getInstance().AllocateMapBuffer(),
-		width, height);
+	// Create the application wrapper object.
+	m_RenderComponent = std::make_shared<RenderComponent>();
+	if (!m_RenderComponent)
+	{
+		return false;
+	}
 
-	/*m_RenderComponent = new RenderComponent(
-		ResourceManager::getInstance().AllocateMapBuffer(),
-		ResourceManager::getInstance().AllocateMapBuffer(),
-		width, height );*/
+	// Initialize the application wrapper object.
+	result = m_RenderComponent->Initialize(m_hinstance, m_hwnd, screenWidth, screenHeight);
+	if (!result)
+	{
+		return false;
+	}
 
 	m_PhysicsComponent = std::make_shared<PhysicsComponent>(
-		m_NavBuffer, width, height, segmentWidth, segmentHeight );
+		m_NavBuffer, width, height, segmentWidth, segmentHeight);
 
-	m_AIManager = std::make_shared<AIManager>( m_NavBuffer, width, height );
-	m_AIManager->SetupNavigationGraph( segmentWidth, segmentHeight );
+	m_AIManager = std::make_shared<AIManager>(m_NavBuffer, width, height);
+	m_AIManager->SetupNavigationGraph(segmentWidth, segmentHeight);
 
 	m_Game = std::make_shared<Game>();
 
 	m_FPSUtil = std::make_unique<FPSUtility>();
 
-	m_Entities = new Entity*[4] { new Player( 'P', 10 ), new Enemy( 'X', 5 ), new Enemy( 'X', 5 ), new Enemy( 'X', 5 ) };
+	m_Entities = new Entity*[4] { new Player('P', 10), new Enemy('X', 5), new Enemy('X', 5), new Enemy('X', 5) };
 
 	m_Entities[0]->position.x = 20;
 	m_Entities[0]->position.y = 10;
@@ -76,18 +108,86 @@ Engine::Engine()
 	m_PhysicsProfiler = std::make_unique<Profiler<UpdateFunction>>();
 	m_AIProfiler = std::make_unique<Profiler<UpdateFunction>>();
 	m_GameProfiler = std::make_unique<Profiler<UpdateFunction>>();
+
+	return true;
 }
 
-// Deconstructor
-Engine::~Engine()
+void Engine::InitializeWindows(int& screenWidth, int& screenHeight)
 {
-	// Deallocate any necessary variables for memory management.
+	WNDCLASSEX wc;
+	DEVMODE dmScreenSettings;
+	int posX, posY;
+	
+	// Get an external pointer to this object.
+	EngineHandle = this;
 
-	//delete m_ThreadPool;
+	// Get the instance of this application.
+	m_hinstance = GetModuleHandle(NULL);
 
-	delete[] m_Entities;
+	// Give the application a name.
+	m_ApplicationName = L"Engine";
 
-	delete[] m_NavBuffer;
+	// Setup the windows class with default settings.
+	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+	wc.lpfnWndProc = WndProc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = m_hinstance;
+	wc.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+	wc.hIconSm = wc.hIcon;
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+	wc.lpszMenuName = NULL;
+	wc.lpszClassName = m_ApplicationName;
+	wc.cbSize = sizeof(WNDCLASSEX);
+
+	// Register the window class.
+	RegisterClassEx(&wc);
+
+	// Determine the resolution of the clients desktop screen.
+	screenWidth = GetSystemMetrics(SM_CXSCREEN);
+	screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+	// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
+	if (FULL_SCREEN)
+	{
+		// If full screen set the screen to maximum size of the users desktop and 32bit.
+		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
+		dmScreenSettings.dmSize = sizeof(dmScreenSettings);
+		dmScreenSettings.dmPelsWidth = (unsigned long)screenWidth;
+		dmScreenSettings.dmPelsHeight = (unsigned long)screenHeight;
+		dmScreenSettings.dmBitsPerPel = 32;
+		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+
+		// Change the display settings to full screen.
+		ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN);
+
+		// Set the position of the window to the top left corner.
+		posX = posY = 0;
+	}
+	else
+	{
+		// If windowed then set it to 800x600 resolution.
+		screenWidth = 800;
+		screenHeight = 600;
+
+		// Place the window in the middle of the screen.
+		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
+		posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
+	}
+
+	// Create the window with the screen settings and get the handle to it.
+	m_hwnd = CreateWindowEx(WS_EX_APPWINDOW, m_ApplicationName, m_ApplicationName,
+		WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
+		posX, posY, screenWidth, screenHeight, NULL, NULL, m_hinstance, NULL);
+
+	// Bring the window up on the screen and set it as main focus.
+	ShowWindow(m_hwnd, SW_SHOW);
+	SetForegroundWindow(m_hwnd);
+	SetFocus(m_hwnd);
+
+	// Hide the mouse cursor.
+	ShowCursor(false);
 }
 
 void Engine::Run()
@@ -120,22 +220,37 @@ void Engine::Run()
 	}
 }
 
+void Engine::ShutdownEngine()
+{
+	// Show the mouse cursor.
+	ShowCursor(true);
+
+	// Fix the display settings if leaving full screen mode.
+	if (FULL_SCREEN)
+	{
+		ChangeDisplaySettings(NULL, 0);
+	}
+
+	// Remove the window.
+	DestroyWindow(m_hwnd);
+	m_hwnd = NULL;
+
+	// Remove the application instance.
+	UnregisterClass(m_ApplicationName, m_hinstance);
+	m_hinstance = NULL;
+
+	// Release the pointer to this class.
+	EngineHandle = NULL;
+}
+
+LRESULT CALLBACK Engine::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
+{
+	return DefWindowProc(hwnd, umsg, wparam, lparam);
+}
+
 void Engine::ProcessInput()
 {
-	Input::Reset();
 
-	// Processing inputs prior to doing any updates.
-	if (_kbhit())
-	{
-		int key_code = toupper(_getch());
-
-		if (key_code == 0x51)
-		{
-			m_IsRunning = false;
-		}
-
-		Input::Update(key_code);
-	}
 }
 
 void Engine::Update(double deltaTime)
@@ -166,39 +281,48 @@ void Engine::Update(double deltaTime)
 	m_PhysicsProfiler->Capture();
 #endif
 
-	// Clear screen first.
-	m_RenderComponent->Clear();
-
-	//m_RenderComponent->Debug(m_Entities, 1, 4);
-
 #if _DEBUG
 	m_RenderProfiler->Start();
 #endif
-	RenderComponent::Update( m_RenderComponent.get(), m_Entities, 0, 4, deltaTime );
-#if _DEBUG
-	m_RenderProfiler->Capture();
-#endif
+	// Render.
+	if (!m_RenderComponent->Update( m_Entities, 0, 4, deltaTime ))
+	{
+		m_IsRunning = false;
+		return;
+	}
+
+	//RenderComponent::Update( m_RenderComponent.get(), m_Entities, 0, 4, deltaTime );
+
 	/*m_ThreadPool->AddNewJob(JobDesc<Entity>(m_RenderComponent, &RenderComponent::Update, m_Entities, 0, 2));
 	m_ThreadPool->AddNewJob(JobDesc<Entity>(m_RenderComponent, &RenderComponent::Update, m_Entities, 2, 2));
 	m_ThreadPool->Wait();*/
-
-	// Render.
-	m_RenderComponent->Render();
-
-	DisplayDebugInfo();
+#if _DEBUG
+	m_RenderProfiler->Capture();
+#endif
 }
 
-void Engine::DisplayDebugInfo()
+LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {
-	printf("\nPress 'q' to exit program...\n\nDebug:\n");
-	printf("FPS = %d\n", m_FPSUtil->GetFPS());
-	printf("AI Time = %f\n", m_AIProfiler->GetProfiledTime());
-	printf("Game Time = %f\n", m_GameProfiler->GetProfiledTime());
-	printf("Physics Time = %f\n", m_PhysicsProfiler->GetProfiledTime());
-	printf("Render Time = %f\n", m_RenderProfiler->GetProfiledTime());
-}
+	switch (umessage)
+	{
+		// Check if the window is being destroyed.
+	case WM_DESTROY:
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
 
-void Engine::Stop()
-{
-	m_IsRunning = false;
+	// Check if the window is being closed.
+	case WM_CLOSE:
+	{
+		PostQuitMessage(0);
+		return 0;
+	}
+
+	// All other messages pass to the message handler in the system class.
+	default:
+	{
+		return EngineHandle->MessageHandler(hwnd, umessage, wparam, lparam);
+	}
+	}
 }

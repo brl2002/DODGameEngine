@@ -107,6 +107,7 @@ void AIManager::SetupNavigationGraph( int segmentWidth, int segmentHeight )
 
 				auto&& adjacentSegment = m_MapGraph->GetSegment( adjacentChunkIndex );
 				segment->AddAdjacentSegment( adjacentSegment, cost );
+				segment->SetPosition( Vector2D( simpleIndex % m_MapBufferWidth, simpleIndex / m_MapBufferWidth ) );
 			}
 		}
 	}

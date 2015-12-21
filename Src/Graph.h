@@ -5,6 +5,7 @@
 #include <list>
 #include <queue>
 #include <functional>
+#include "Common.h"
 
 template<typename T, typename Number = int>
 class PriorityQueue
@@ -35,12 +36,18 @@ private:
 
 	int m_Index;
 
+	Vector2D m_Position;
+
 public:
-	inline void AddAdjacentSegment( Segment* segment, int cost ) { m_SegmentNeighbors.push_back(Neighbor(segment, cost)); }
+	inline void AddAdjacentSegment( Segment* segment, int cost ) { m_SegmentNeighbors.push_back( Neighbor( segment, cost ) ); }
 
 	inline void SetIndex( int index ) { m_Index = index; }
 
 	inline int GetIndex() { return m_Index; }
+
+	inline void SetPosition( Vector2D& pos ) { m_Position = pos; }
+
+	inline Vector2D GetPosition() { return m_Position; }
 
 	inline const std::vector<Neighbor>& Neighbors() { return m_SegmentNeighbors; }
 };

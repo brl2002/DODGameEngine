@@ -15,7 +15,7 @@ ResourceManager::~ResourceManager()
 
 bool ResourceManager::ReadMapFile( char* fileName )
 {
-	char *dir = "../Resources/";
+	char *dir = "../data/";
 	int finalNameLength = std::strlen( dir ) + std::strlen( fileName ) + 1;
 	char* finalName = new char[finalNameLength];
 	strcpy_s( finalName, finalNameLength, dir );

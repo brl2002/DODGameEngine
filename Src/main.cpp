@@ -1,13 +1,16 @@
 #include "Engine.h"
 
-#include <Windows.h>
-
-void main()
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
-	HWND hwnd = GetConsoleWindow();
-	HMENU hmenu = GetSystemMenu(hwnd, FALSE);
-	EnableMenuItem(hmenu, SC_CLOSE, MF_GRAYED);
+	Engine engine;
 
-	Engine engine = Engine();
-	engine.Run();
+	bool result = engine.Initialize();
+	if (result)
+	{
+		engine.Run();
+	}
+
+	engine.ShutdownEngine();
+
+	return 0;
 }
