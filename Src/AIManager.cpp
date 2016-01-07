@@ -40,6 +40,7 @@ void AIManager::Update( void* aiManagerInst, Entity** entities, int startIndex, 
 		Entity* target = enemy->GetTarget();
 
 		// Get segment where enemy is currently at.
+		// Add 0.5 for proper rounding of the floating point values
 		int currentIndex = (int)enemy->position.y * width + (int)enemy->position.x;
 		Segment* currentSegment = graph->GetSegment( ArrayAccessHelper::GetChunkIndex( currentIndex ));
 
@@ -67,8 +68,8 @@ void AIManager::Update( void* aiManagerInst, Entity** entities, int startIndex, 
 
 			enemy->currentPathIndex = 0;
 
-			enemy->position.x = (int)enemy->position.x;
-			enemy->position.y = (int)enemy->position.y;
+			//enemy->position.x = (int)enemy->position.x;
+			//enemy->position.y = (int)enemy->position.y;
 		}
 	}
 }

@@ -2,13 +2,16 @@
 
 RenderComponent::RenderComponent()
 	:	m_Direct3D(0),
+		m_Input(0),
 		m_Camera(0),
-		m_Model(0),
+		m_Model1(0),
+		m_Model2(0),
 		m_LightShader(0),
 		m_Light(0),
 		m_Grid(0),
 		m_ColorShader(0),
 		m_Position(0),
+		m_PlayerInputDelta(0),
 		m_Fps(0),
 		m_Cpu(0),
 		m_FontShader(0),
@@ -32,6 +35,21 @@ bool RenderComponent::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth
 	DirectX::XMMATRIX baseViewMatrix;
 	char videoCard[128];
 	int videoMemory;
+
+	// Create the input object.  The input object will be used to handle reading the keyboard and mouse input from the user.
+	m_Input = new Input;
+	if (!m_Input)
+	{
+		return false;
+	}
+
+	// Initialize the input object.
+	result = m_Input->Initialize(hinstance, hwnd, screenWidth, screenHeight);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the input object.", L"Error", MB_OK);
+		return false;
+	}
 
 	// Create the Direct3D object.
 	m_Direct3D = new D3D;
@@ -70,14 +88,27 @@ bool RenderComponent::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth
 	m_Camera->SetRotation(35, 0, 0);
 
 	// Create the model object.
-	m_Model = new Model;
-	if (!m_Model)
+	m_Model1 = new Model;
+	if (!m_Model1)
+	{
+		return false;
+	}
+
+	m_Model2 = new Model;
+	if (!m_Model2)
 	{
 		return false;
 	}
 
 	// Initialize the model object.
-	result = m_Model->Initialize(m_Direct3D->GetDevice(), "../data/cube.txt", L"../data/seafloor.dds");
+	result = m_Model1->Initialize(m_Direct3D->GetDevice(), "../data/cube.txt", L"../data/seafloor.dds", DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+		return false;
+	}
+
+	result = m_Model2->Initialize(m_Direct3D->GetDevice(), "../data/cube.txt", L"../data/seafloor.dds", DirectX::XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f));
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
@@ -149,6 +180,12 @@ bool RenderComponent::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth
 
 	// Set the initial position of the viewer to the same as the initial camera position.
 	m_Position->SetPosition(cameraX, cameraY, cameraZ);
+
+	m_PlayerInputDelta = new Position;
+	if (!m_PlayerInputDelta)
+	{
+		return false;
+	}
 
 	// Create the fps object.
 	m_Fps = new FPS;
@@ -254,6 +291,12 @@ void RenderComponent::Shutdown()
 		m_Position = 0;
 	}
 
+	if (m_PlayerInputDelta)
+	{
+		delete m_PlayerInputDelta;
+		m_PlayerInputDelta = 0;
+	}
+
 	// Release the color shader object.
 	if (m_ColorShader)
 	{
@@ -286,11 +329,18 @@ void RenderComponent::Shutdown()
 	}
 
 	// Release the model object.
-	if (m_Model)
+	if (m_Model1)
 	{
-		m_Model->Shutdown();
-		delete m_Model;
-		m_Model = 0;
+		m_Model1->Shutdown();
+		delete m_Model1;
+		m_Model1 = 0;
+	}
+
+	if (m_Model2)
+	{
+		m_Model2->Shutdown();
+		delete m_Model2;
+		m_Model2 = 0;
 	}
 
 	// Release the camera object.
@@ -307,11 +357,26 @@ void RenderComponent::Shutdown()
 		delete m_Direct3D;
 		m_Direct3D = 0;
 	}
+
+	// Release the input object.
+	if (m_Input)
+	{
+		m_Input->Shutdown();
+		delete m_Input;
+		m_Input = 0;
+	}
 }
 
 bool RenderComponent::Update( Entity** entities, int startIndex, int numEntities, double deltaTime )
 {
 	bool result;
+
+	// Read the user input.
+	result = m_Input->Frame();
+	if (!result)
+	{
+		return false;
+	}
 
 	// Update the system stats.
 	m_Fps->Frame();
@@ -327,6 +392,13 @@ bool RenderComponent::Update( Entity** entities, int startIndex, int numEntities
 
 	// Update the CPU usage value in the text object.
 	result = m_Text->SetCpu(m_Cpu->GetCpuPercentage(), m_Direct3D->GetDeviceContext());
+	if (!result)
+	{
+		return false;
+	}
+
+	// Do the frame input processing.
+	result = HandleInput(deltaTime, entities[startIndex]);
 	if (!result)
 	{
 		return false;
@@ -356,17 +428,27 @@ bool RenderComponent::Update( Entity** entities, int startIndex, int numEntities
 		return false;
 	}
 
-	for (int i = startIndex; i < startIndex + numEntities; ++i)
+	int lastIndex = startIndex + numEntities;
+	DirectX::XMMATRIX worldMat;
+	worldMat = DirectX::XMMatrixScaling(0.3f, 0.3f, 0.3f) * DirectX::XMMatrixTranslation(entities[startIndex]->position.x, 1, entities[startIndex]->position.y);
+
+	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	m_Model1->Render(m_Direct3D->GetDeviceContext());
+
+	// Render the model using the light shader.
+	result = m_LightShader->Render(m_Direct3D->GetDeviceContext(), m_Model1->GetIndexCount(), worldMat, viewMatrix, projectionMatrix,
+		m_Model1->GetTexture(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
+
+	for (int i = startIndex + 1; i < lastIndex; ++i)
 	{
-		DirectX::XMMATRIX worldMat;
-		worldMat = DirectX::XMMatrixScaling(0.3f, 0.3f, 0.3f) * DirectX::XMMatrixTranslation(entities[i]->position.x, 0, entities[i]->position.y);
+		worldMat = DirectX::XMMatrixScaling(0.3f, 0.3f, 0.3f) * DirectX::XMMatrixTranslation(entities[i]->position.x, 1, entities[i]->position.y);
 
 		// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-		m_Model->Render(m_Direct3D->GetDeviceContext());
+		m_Model2->Render(m_Direct3D->GetDeviceContext());
 
 		// Render the model using the light shader.
-		result = m_LightShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMat, viewMatrix, projectionMatrix,
-			m_Model->GetTexture(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
+		result = m_LightShader->Render(m_Direct3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMat, viewMatrix, projectionMatrix,
+			m_Model2->GetTexture(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
 	}
 
 	// Turn off the Z buffer to begin all 2D rendering.
@@ -392,4 +474,34 @@ bool RenderComponent::Update( Entity** entities, int startIndex, int numEntities
 	m_Direct3D->EndScene();
 
 	return result;
+}
+
+bool RenderComponent::HandleInput(float frameTime, Entity* entity)
+{
+	if (m_Input->IsEscapePressed())
+	{
+		return false;
+	}
+
+	if (m_Input->IsLeftPressed())
+	{
+		entity->position.x -= 10 * frameTime;
+	}
+
+	if (m_Input->IsRightPressed())
+	{
+		entity->position.x += 10 * frameTime;
+	}
+
+	if (m_Input->IsDownPressed())
+	{
+		entity->position.y -= 10 * frameTime;
+	}
+
+	if (m_Input->IsUpPressed())
+	{
+		entity->position.y += 10 * frameTime;
+	}
+
+	return true;
 }

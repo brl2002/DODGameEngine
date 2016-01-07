@@ -12,14 +12,14 @@ private:
 	struct VertexType
 	{
 		DirectX::XMFLOAT3 position;
-		DirectX::XMFLOAT2 texture;
+		DirectX::XMFLOAT4 color;
 		DirectX::XMFLOAT3 normal;
 	};
 
 	struct ModelType
 	{
 		float x, y, z;
-		float tu, tv;
+		float r, g, b, a;
 		float nx, ny, nz;
 	};
 
@@ -28,7 +28,7 @@ public:
 	Model(const Model&);
 	~Model();
 
-	bool Initialize(ID3D11Device*, char*, WCHAR*);
+	bool Initialize(ID3D11Device*, char*, WCHAR*, DirectX::XMFLOAT4);
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
 
@@ -37,7 +37,7 @@ public:
 
 
 private:
-	bool InitializeBuffers(ID3D11Device*);
+	bool InitializeBuffers(ID3D11Device*, DirectX::XMFLOAT4);
 	void ShutdownBuffers();
 	void RenderBuffers(ID3D11DeviceContext*);
 

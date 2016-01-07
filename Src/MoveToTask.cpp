@@ -9,13 +9,13 @@ bool MoveToTask::DoTask( Enemy* enemy, double deltaTime )
 
 	// Get chunk index of current segment of path.
 	int chunkIndex = enemy->path[currentPathIndex]->GetIndex();
-
+	
 	// Get x and y position of current segment based on its chunk index.
 	Vector2D currentIndexPosition = Vector2D( ArrayAccessHelper::GetSimpleColumnIndex( chunkIndex ),
 													ArrayAccessHelper::GetSimpleRowIndex( chunkIndex ) );
 
 	//Check if we are close to current position enemy moving towards.
-	if (Math::Distance( enemy->position, currentIndexPosition ) < 0.1f)
+	if (Math::Distance( enemy->position, currentIndexPosition ) < 0.05f)
 	{
 		// If path index is greater (is not less) than the last index.
 		if (currentPathIndex < enemy->path.size() - 1)

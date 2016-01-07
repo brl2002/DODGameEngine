@@ -105,8 +105,8 @@ bool Grid::InitializeBuffers(ID3D11Device* device)
 			index4 = (m_terrainHeight * (j + 1)) + (i + 1);  // Upper right.
 															 
 			// Upper left.
-			positionX = (float)i;
-			positionZ = (float)(j + 1);
+			positionX = (float)(i - 0.5f);
+			positionZ = (float)(j + 0.5f);
 
 			vertices[index].position = DirectX::XMFLOAT3(positionX, 0.0f, positionZ);
 			vertices[index].color = color;
@@ -114,8 +114,8 @@ bool Grid::InitializeBuffers(ID3D11Device* device)
 			index++;
 
 			// Upper right.
-			positionX = (float)(i + 1);
-			positionZ = (float)(j + 1);
+			positionX = (float)(i + 0.5f);
+			positionZ = (float)(j + 0.5f);
 
 			vertices[index].position = DirectX::XMFLOAT3(positionX, 0.0f, positionZ);
 			vertices[index].color = color;
@@ -123,8 +123,8 @@ bool Grid::InitializeBuffers(ID3D11Device* device)
 			index++;
 
 			// Bottom left.
-			positionX = (float)i;
-			positionZ = (float)j;
+			positionX = (float)(i - 0.5f);
+			positionZ = (float)(j - 0.5f);
 
 			vertices[index].position = DirectX::XMFLOAT3(positionX, 0.0f, positionZ);
 			vertices[index].color = color;
@@ -138,8 +138,8 @@ bool Grid::InitializeBuffers(ID3D11Device* device)
 			index++;
 
 			// Upper right.
-			positionX = (float)(i + 1);
-			positionZ = (float)(j + 1);
+			positionX = (float)(i + 0.5f);
+			positionZ = (float)(j + 0.5f);
 
 			vertices[index].position = DirectX::XMFLOAT3(positionX, 0.0f, positionZ);
 			vertices[index].color = color;
@@ -147,8 +147,8 @@ bool Grid::InitializeBuffers(ID3D11Device* device)
 			index++;
 
 			// Bottom right.
-			positionX = (float)(i + 1);
-			positionZ = (float)j;
+			positionX = (float)(i + 0.5f);
+			positionZ = (float)(j - 0.5f);
 
 			vertices[index].position = DirectX::XMFLOAT3(positionX, 0.0f, positionZ);
 			vertices[index].color = color;

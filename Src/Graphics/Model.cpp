@@ -16,7 +16,7 @@ Model::~Model()
 {
 }
 
-bool Model::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename)
+bool Model::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename, DirectX::XMFLOAT4 color)
 {
 	bool result;
 	
@@ -28,7 +28,7 @@ bool Model::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* texture
 	}
 
 	// Initialize the vertex and index buffers.
-	result = InitializeBuffers(device);
+	result = InitializeBuffers(device, color);
 	if (!result)
 	{
 		return false;
@@ -72,7 +72,7 @@ ID3D11ShaderResourceView* Model::GetTexture()
 	return m_Texture->GetTexture();
 }
 
-bool Model::InitializeBuffers(ID3D11Device* device)
+bool Model::InitializeBuffers(ID3D11Device* device, DirectX::XMFLOAT4 color)
 {
 	VertexType* vertices;
 	unsigned long* indices;
@@ -99,7 +99,7 @@ bool Model::InitializeBuffers(ID3D11Device* device)
 	for (i = 0; i<m_vertexCount; i++)
 	{
 		vertices[i].position = DirectX::XMFLOAT3(m_model[i].x, m_model[i].y, m_model[i].z);
-		vertices[i].texture = DirectX::XMFLOAT2(m_model[i].tu, m_model[i].tv);
+		vertices[i].color = DirectX::XMFLOAT4(color.x, color.y, color.z, color.w);
 		vertices[i].normal = DirectX::XMFLOAT3(m_model[i].nx, m_model[i].ny, m_model[i].nz);
 
 		indices[i] = i;
@@ -271,8 +271,9 @@ bool Model::LoadModel(char* filename)
 	// Read in the vertex data.
 	for (i = 0; i<m_vertexCount; i++)
 	{
+		float tu, tv;
 		fin >> m_model[i].x >> m_model[i].y >> m_model[i].z;
-		fin >> m_model[i].tu >> m_model[i].tv;
+		fin >> tu >> tv;
 		fin >> m_model[i].nx >> m_model[i].ny >> m_model[i].nz;
 	}
 

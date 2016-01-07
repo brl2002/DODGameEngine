@@ -6,6 +6,7 @@ const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
 
 #include "D3D.h"
+#include "Input.h"
 #include "Camera.h"
 #include "Grid.h"
 #include "ColorShader.h"
@@ -35,11 +36,18 @@ public:
 	bool Update( Entity** entities, int startIndex, int numEntities, double deltaTime );
 
 private:
+	bool HandleInput(float, Entity*);
+
+private:
 	D3D* m_Direct3D;
+
+	Input* m_Input;
 
 	Camera* m_Camera;
 
-	Model* m_Model;
+	Model* m_Model1;
+
+	Model* m_Model2;
 
 	LightShader* m_LightShader;
 
@@ -50,6 +58,8 @@ private:
 	ColorShader* m_ColorShader;
 
 	Position* m_Position;
+
+	Position* m_PlayerInputDelta;
 
 	FPS* m_Fps;
 
