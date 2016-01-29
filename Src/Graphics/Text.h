@@ -34,6 +34,8 @@ public:
 	bool SetCameraPosition(float, float, float, ID3D11DeviceContext*);
 	bool SetCameraRotation(float, float, float, ID3D11DeviceContext*);
 
+	bool SetUpdateTime(float, float, float, ID3D11DeviceContext*);
+
 private:
 	bool InitializeSentence(SentenceType**, int, ID3D11Device*);
 	bool UpdateSentence(SentenceType*, char*, int, int, float, float, float, ID3D11DeviceContext*);

@@ -49,63 +49,63 @@ bool Text::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, 
 	}
 
 	// Initialize the second sentence.
-	result = InitializeSentence(&m_sentence2, 32, device);
+	result = InitializeSentence(&m_sentence2, 150, device);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Initialize the third sentence.
-	result = InitializeSentence(&m_sentence3, 16, device);
+	result = InitializeSentence(&m_sentence3, 150, device);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Initialize the fourth sentence.
-	result = InitializeSentence(&m_sentence4, 16, device);
+	result = InitializeSentence(&m_sentence4, 150, device);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Initialize the fifth sentence.
-	result = InitializeSentence(&m_sentence5, 16, device);
+	result = InitializeSentence(&m_sentence5, 150, device);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Initialize the sixth sentence.
-	result = InitializeSentence(&m_sentence6, 16, device);
+	result = InitializeSentence(&m_sentence6, 150, device);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Initialize the seventh sentence.
-	result = InitializeSentence(&m_sentence7, 16, device);
+	result = InitializeSentence(&m_sentence7, 150, device);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Initialize the eighth sentence.
-	result = InitializeSentence(&m_sentence8, 16, device);
+	result = InitializeSentence(&m_sentence8, 150, device);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Initialize the ninth sentence.
-	result = InitializeSentence(&m_sentence9, 16, device);
+	result = InitializeSentence(&m_sentence9, 150, device);
 	if (!result)
 	{
 		return false;
 	}
 
 	// Initialize the tenth sentence.
-	result = InitializeSentence(&m_sentence10, 16, device);
+	result = InitializeSentence(&m_sentence10, 150, device);
 	if (!result)
 	{
 		return false;
@@ -417,6 +417,51 @@ bool Text::SetCameraRotation(float rotX, float rotY, float rotZ, ID3D11DeviceCon
 	strcat_s(dataString, tempString);
 
 	result = UpdateSentence(m_sentence10, dataString, 10, 250, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool Text::SetUpdateTime(float gameUpdateTime, float aiUpdateTime, float physicsUpdateTime, ID3D11DeviceContext* deviceContext)
+{
+	char tempString[50];
+	char dataString[50];
+	bool result;
+
+	// Setup the X position string.
+	//_itoa_s(gameUpdateTime, tempString, 10);
+	sprintf_s(tempString, "%f", gameUpdateTime);
+	strcpy_s(dataString, "Game Update Time: ");
+	strcat_s(dataString, tempString);
+
+	result = UpdateSentence(m_sentence5, dataString, 10, 130, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Setup the Y position string.
+	//_itoa_s(aiUpdateTime, tempString, 10);
+	sprintf_s(tempString, "%f", aiUpdateTime);
+	strcpy_s(dataString, "AI Update Time: ");
+	strcat_s(dataString, tempString);
+
+	result = UpdateSentence(m_sentence6, dataString, 10, 150, 0.0f, 1.0f, 0.0f, deviceContext);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Setup the Z position string.
+	//_itoa_s(physicsUpdateTime, tempString, 10);
+	sprintf_s(tempString, "%f", physicsUpdateTime);
+	strcpy_s(dataString, "Physics Update Time: ");
+	strcat_s(dataString, tempString);
+
+	result = UpdateSentence(m_sentence7, dataString, 10, 170, 0.0f, 1.0f, 0.0f, deviceContext);
 	if (!result)
 	{
 		return false;

@@ -8,7 +8,8 @@
 #include "Enemy.h"
 
 Engine::Engine()
-	:	m_IsRunning(false)
+	:	m_IsRunning(false),
+		m_NumDividend(0)
 {
 }
 
@@ -16,8 +17,6 @@ Engine::Engine()
 Engine::~Engine()
 {
 	// Deallocate any necessary variables for memory management.
-
-	//delete m_ThreadPool;
 
 	delete[] m_Entities;
 
@@ -57,7 +56,15 @@ bool Engine::Initialize()
 	// Allocate a navigation buffer based on the map read.
 	m_NavBuffer = ResourceManager::getInstance().AllocateNavBuffer("x", segmentWidth, segmentHeight);
 
-	//m_ThreadPool = new ThreadPool<Entity>();
+#if MULTI_THREADED
+	m_ThreadPool = std::make_shared<ThreadPool<Entity>>();
+	if (!m_ThreadPool)
+	{
+		return false;
+	}
+
+	m_NumDividend = m_NumEntities / m_ThreadPool->GetConcurrencyCount();
+#endif
 
 	// Do all inititialization of components here
 
@@ -85,7 +92,22 @@ bool Engine::Initialize()
 
 	m_FPSUtil = std::make_unique<FPSUtility>();
 
-	m_Entities = new Entity*[4] { new Player('P', 10), new Enemy('X', 5), new Enemy('X', 5), new Enemy('X', 5) };
+	m_Entities = new Entity*[m_NumEntities];
+
+	//m_Entities = new Entity*[m_NumEntities]
+	//{
+	//	new Player('P', 10), new Enemy('X', 5), new Enemy('X', 5), new Enemy('X', 5),
+	//		new Enemy('X', 5), new Enemy('X', 5), new Enemy('X', 5), new Enemy('X', 5),
+	//		new Enemy('X', 5), new Enemy('X', 5), new Enemy('X', 5), new Enemy('X', 5),
+	//		new Enemy('X', 5), new Enemy('X', 5), new Enemy('X', 5), new Enemy('X', 5),
+	//		new Enemy('X', 5), new Enemy('X', 5), new Enemy('X', 5), new Enemy('X', 5)
+	//};
+
+	m_Entities[0] = new Player('P', 10);
+	for (int i = 1; i < m_NumEntities; ++i)
+	{
+		m_Entities[i] = new Enemy('X', 5);
+	}
 
 	m_Entities[0]->position.x = 20;
 	m_Entities[0]->position.y = 10;
@@ -97,7 +119,13 @@ bool Engine::Initialize()
 	m_Entities[3]->position.x = 25;
 	m_Entities[3]->position.y = 2;
 
-	for (int i = 1; i < 4; ++i)
+	for (int i = 4; i < m_NumEntities; ++i)
+	{
+		m_Entities[i]->position.x = 25;
+		m_Entities[i]->position.y = 2;
+	}
+
+	for (int i = 1; i < m_NumEntities; ++i)
 	{
 		Enemy* enemy = (Enemy*)m_Entities[i];
 		enemy->SetTarget(m_Entities[0]);
@@ -203,8 +231,6 @@ void Engine::Run()
 	// Main loop.
 	while (m_IsRunning)
 	{
-		ProcessInput();
-
 		Update( deltaTime );
 
 		// Frame time calculation.
@@ -248,11 +274,6 @@ LRESULT CALLBACK Engine::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPA
 	return DefWindowProc(hwnd, umsg, wparam, lparam);
 }
 
-void Engine::ProcessInput()
-{
-
-}
-
 void Engine::Update(double deltaTime)
 {
 	m_FPSUtil->Update( deltaTime );
@@ -260,7 +281,17 @@ void Engine::Update(double deltaTime)
 #if _DEBUG
 	m_AIProfiler->Start();
 #endif
-	AIManager::Update( m_AIManager.get(), m_Entities, 1, 3, deltaTime );
+
+#if MULTI_THREADED
+	m_ThreadPool->AddNewJob( JobDesc<Entity>( m_AIManager.get(), &AIManager::Update, m_Entities, 1, m_NumDividend - 1, deltaTime ) );
+	m_ThreadPool->AddNewJob( JobDesc<Entity>( m_AIManager.get(), &AIManager::Update, m_Entities, m_NumDividend, m_NumDividend, deltaTime ) );
+	m_ThreadPool->AddNewJob( JobDesc<Entity>( m_AIManager.get(), &AIManager::Update, m_Entities, m_NumDividend * 2, m_NumDividend, deltaTime ) );
+	m_ThreadPool->AddNewJob( JobDesc<Entity>( m_AIManager.get(), &AIManager::Update, m_Entities, m_NumDividend * 3, m_NumDividend, deltaTime ) );
+	m_ThreadPool->Wait();
+#else
+	AIManager::Update( m_AIManager.get(), m_Entities, 1, m_NumEntities - 1, deltaTime );
+#endif
+
 #if _DEBUG
 	m_AIProfiler->Capture();
 #endif
@@ -268,7 +299,17 @@ void Engine::Update(double deltaTime)
 #if _DEBUG
 	m_GameProfiler->Start();
 #endif
-	Game::Update( m_Game.get(), m_Entities, 0, 4, deltaTime );
+
+#if MULTI_THREADED
+	m_ThreadPool->AddNewJob( JobDesc<Entity>( m_Game.get(), &Game::Update, m_Entities, 0, m_NumDividend, deltaTime ) );
+	m_ThreadPool->AddNewJob( JobDesc<Entity>( m_Game.get(), &Game::Update, m_Entities, m_NumDividend, m_NumDividend, deltaTime ) );
+	m_ThreadPool->AddNewJob( JobDesc<Entity>( m_Game.get(), &Game::Update, m_Entities, m_NumDividend * 2, m_NumDividend, deltaTime ) );
+	m_ThreadPool->AddNewJob( JobDesc<Entity>( m_Game.get(), &Game::Update, m_Entities, m_NumDividend * 3, m_NumDividend, deltaTime ) );
+	m_ThreadPool->Wait();
+#else
+	Game::Update( m_Game.get(), m_Entities, 0, m_NumEntities, deltaTime );
+#endif
+
 #if _DEBUG
 	m_GameProfiler->Capture();
 #endif
@@ -276,26 +317,45 @@ void Engine::Update(double deltaTime)
 #if _DEBUG
 	m_PhysicsProfiler->Start();
 #endif
-	PhysicsComponent::Update( m_PhysicsComponent.get(), m_Entities, 0, 4, deltaTime );
+
+#if MULTI_THREADED
+	m_ThreadPool->AddNewJob( JobDesc<Entity>( m_PhysicsComponent.get(), &PhysicsComponent::Update, m_Entities, 0, m_NumDividend, deltaTime ) );
+	m_ThreadPool->AddNewJob( JobDesc<Entity>( m_PhysicsComponent.get(), &PhysicsComponent::Update, m_Entities, m_NumDividend, m_NumDividend, deltaTime ) );
+	m_ThreadPool->AddNewJob( JobDesc<Entity>( m_PhysicsComponent.get(), &PhysicsComponent::Update, m_Entities, m_NumDividend * 2, m_NumDividend, deltaTime ) );
+	m_ThreadPool->AddNewJob( JobDesc<Entity>( m_PhysicsComponent.get(), &PhysicsComponent::Update, m_Entities, m_NumDividend * 3, m_NumDividend, deltaTime ) );
+	m_ThreadPool->Wait();
+#else
+	PhysicsComponent::Update( m_PhysicsComponent.get(), m_Entities, 0, m_NumEntities, deltaTime );
+#endif
+
 #if _DEBUG
 	m_PhysicsProfiler->Capture();
 #endif
 
 #if _DEBUG
+	m_RenderComponent->UpdateDebugInfo( m_GameProfiler->GetProfiledTime(), m_AIProfiler->GetProfiledTime(), m_PhysicsProfiler->GetProfiledTime() );
+
 	m_RenderProfiler->Start();
 #endif
 	// Render.
-	if (!m_RenderComponent->Update( m_Entities, 0, 4, deltaTime ))
+	m_RenderComponent->StartRender();
+
+	m_IsRunning = m_RenderComponent->Update( m_Entities, 0, m_NumEntities, deltaTime );
+	if (!m_IsRunning)
 	{
-		m_IsRunning = false;
 		return;
 	}
 
-	//RenderComponent::Update( m_RenderComponent.get(), m_Entities, 0, 4, deltaTime );
+	m_RenderComponent->StartRender2D();
 
-	/*m_ThreadPool->AddNewJob(JobDesc<Entity>(m_RenderComponent, &RenderComponent::Update, m_Entities, 0, 2));
-	m_ThreadPool->AddNewJob(JobDesc<Entity>(m_RenderComponent, &RenderComponent::Update, m_Entities, 2, 2));
-	m_ThreadPool->Wait();*/
+	m_IsRunning = m_RenderComponent->RenderText();
+	if (!m_IsRunning)
+	{
+		return;
+	}
+
+	m_RenderComponent->EndRender();
+
 #if _DEBUG
 	m_RenderProfiler->Capture();
 #endif

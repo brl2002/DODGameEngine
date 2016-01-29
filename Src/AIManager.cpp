@@ -41,12 +41,12 @@ void AIManager::Update( void* aiManagerInst, Entity** entities, int startIndex, 
 
 		// Get segment where enemy is currently at.
 		// Add 0.5 for proper rounding of the floating point values
-		int currentIndex = (int)enemy->position.y * width + (int)enemy->position.x;
-		Segment* currentSegment = graph->GetSegment( ArrayAccessHelper::GetChunkIndex( currentIndex ));
+		int currentIndex = (int)(enemy->position.y + 0.5) * width + (int)(enemy->position.x + 0.5);
+		Segment* currentSegment = graph->GetSegment( ArrayAccessHelper::GetChunkIndex( currentIndex ) );
 
 		// Get segment where enemy's target is currently at.
-		int targetIndex = (int)target->position.y * width + (int)target->position.x;
-		Segment* targetSegment = graph->GetSegment( ArrayAccessHelper::GetChunkIndex( targetIndex ));
+		int targetIndex = (int)(target->position.y + 0.5) * width + (int)(target->position.x + 0.5);
+		Segment* targetSegment = graph->GetSegment( ArrayAccessHelper::GetChunkIndex( targetIndex ) );
 
 		// If enemy requires new path and enemy's last target segment is not the segment where target is actually at.
 		if (enemy->ShouldFindPath() && enemy->GetLastTargetSegment() != targetSegment)

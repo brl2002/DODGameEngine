@@ -33,7 +33,17 @@ public:
 
 	void Shutdown();
 
+	void StartRender();
+
+	void StartRender2D();
+
+	bool RenderText();
+
+	void EndRender();
+
 	bool Update( Entity** entities, int startIndex, int numEntities, double deltaTime );
+
+	bool UpdateDebugInfo( float gameUpdateTime, float aiUpdateTime, float physicsUpdateTime );
 
 private:
 	bool HandleInput(float, Entity*);

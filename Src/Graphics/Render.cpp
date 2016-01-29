@@ -367,7 +367,30 @@ void RenderComponent::Shutdown()
 	}
 }
 
-bool RenderComponent::Update( Entity** entities, int startIndex, int numEntities, double deltaTime )
+bool RenderComponent::UpdateDebugInfo( float gameUpdateTime, float aiUpdateTime, float physicsUpdateTime )
+{
+	return m_Text->SetUpdateTime( gameUpdateTime, aiUpdateTime, physicsUpdateTime, m_Direct3D->GetDeviceContext() );
+}
+
+void RenderComponent::StartRender()
+{
+	// Clear the scene.
+	m_Direct3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
+
+	// Generate the view matrix based on the camera's position.
+	m_Camera->Render();
+}
+
+void RenderComponent::StartRender2D()
+{
+	// Turn off the Z buffer to begin all 2D rendering.
+	m_Direct3D->TurnZBufferOff();
+
+	// Turn on the alpha blending before rendering the text.
+	m_Direct3D->TurnOnAlphaBlending();
+}
+
+bool RenderComponent::RenderText()
 {
 	bool result;
 
@@ -397,6 +420,38 @@ bool RenderComponent::Update( Entity** entities, int startIndex, int numEntities
 		return false;
 	}
 
+	DirectX::XMMATRIX worldMatrix, orthoMatrix;
+
+	// Get the world, view, projection, and ortho matrices from the camera and Direct3D objects.
+	m_Direct3D->GetWorldMatrix(worldMatrix);
+	m_Direct3D->GetOrthoMatrix(orthoMatrix);
+
+	// Render the text user interface elements.
+	result = m_Text->Render(m_Direct3D->GetDeviceContext(), m_FontShader, worldMatrix, orthoMatrix);
+	if (!result)
+	{
+		return false;
+	}
+
+	return result;
+}
+
+void RenderComponent::EndRender()
+{
+	// Turn off alpha blending after rendering the text.
+	m_Direct3D->TurnOffAlphaBlending();
+
+	// Turn the Z buffer back on now that all 2D rendering has completed.
+	m_Direct3D->TurnZBufferOn();
+
+	// Present the rendered scene to the screen.
+	m_Direct3D->EndScene();
+}
+
+bool RenderComponent::Update( Entity** entities, int startIndex, int numEntities, double deltaTime )
+{
+	bool result;
+
 	// Do the frame input processing.
 	result = HandleInput(deltaTime, entities[startIndex]);
 	if (!result)
@@ -405,12 +460,6 @@ bool RenderComponent::Update( Entity** entities, int startIndex, int numEntities
 	}
 
 	DirectX::XMMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
-
-	// Clear the scene.
-	m_Direct3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
-
-	// Generate the view matrix based on the camera's position.
-	m_Camera->Render();
 
 	// Get the world, view, projection, and ortho matrices from the camera and Direct3D objects.
 	m_Direct3D->GetWorldMatrix(worldMatrix);
@@ -450,28 +499,6 @@ bool RenderComponent::Update( Entity** entities, int startIndex, int numEntities
 		result = m_LightShader->Render(m_Direct3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMat, viewMatrix, projectionMatrix,
 			m_Model2->GetTexture(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
 	}
-
-	// Turn off the Z buffer to begin all 2D rendering.
-	m_Direct3D->TurnZBufferOff();
-
-	// Turn on the alpha blending before rendering the text.
-	m_Direct3D->TurnOnAlphaBlending();
-
-	// Render the text user interface elements.
-	result = m_Text->Render(m_Direct3D->GetDeviceContext(), m_FontShader, worldMatrix, orthoMatrix);
-	if (!result)
-	{
-		return false;
-	}
-
-	// Turn off alpha blending after rendering the text.
-	m_Direct3D->TurnOffAlphaBlending();
-
-	// Turn the Z buffer back on now that all 2D rendering has completed.
-	m_Direct3D->TurnZBufferOn();
-
-	// Present the rendered scene to the screen.
-	m_Direct3D->EndScene();
 
 	return result;
 }

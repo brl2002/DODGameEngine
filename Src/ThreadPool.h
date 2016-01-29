@@ -16,7 +16,7 @@ class JobDesc
 
 	void* m_ObjectInst;
 	void(*m_Func)(void*, DataType**, int, int, double);
-	DataType* m_DataSet;
+	DataType** m_DataSet;
 	int m_StartIndex;
 	int m_Length;
 	double m_DeltaTime;
@@ -59,13 +59,16 @@ class ThreadPool
 
 	bool m_ShouldStop;
 
+	int m_ConcurrencyCount;
+
 public:
 	ThreadPool()
-		: m_ShouldStop(false)
+		:	m_ShouldStop(false),
+			m_ConcurrencyCount(0)
 	{
-		int numThread = std::thread::hardware_concurrency();
+		m_ConcurrencyCount = std::thread::hardware_concurrency();
 
-		for (int i = 0; i < numThread; ++i)
+		for (int i = 0; i < m_ConcurrencyCount; ++i)
 		{
 			m_ThreadPool.push_back(std::thread(&ThreadPool::ThreadLoop, this));
 		}
@@ -95,6 +98,8 @@ public:
 	}
 
 	inline int GetJobCount() { return m_JobCount; }
+
+	inline int GetConcurrencyCount() { return m_ConcurrencyCount; }
 
 	// Add new job to be processed by a thread in the ThreadPool
 	void AddNewJob(JobDesc<DataType>&& job)

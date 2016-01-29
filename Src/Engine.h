@@ -1,15 +1,20 @@
 #pragma once
 
+#define MULTI_THREADED 1
+
 #include "Physics.h"
 #include "AIManager.h"
 #include "Game.h"
 #include "Entity.h"
-#include "ThreadPool.h"
 #include "FPSUtility.h"
 #include "Profiler.h"
 #include "Graphics\Render.h"
 #include "Graphics\Input.h"
 #include <memory>
+
+#if MULTI_THREADED
+#include "ThreadPool.h"
+#endif
 
 #define TIME_PER_FRAME 1.0f / 60.0f
 
@@ -21,7 +26,9 @@ typedef void(*UpdateFunction)(void*, Entity**, int, int, double);
 /////////////////////////////////////////////////////////////////////////////////
 class Engine
 {
-	//ThreadPool<Entity>* m_ThreadPool;
+#if MULTI_THREADED
+	std::shared_ptr<ThreadPool<Entity>> m_ThreadPool;
+#endif
 
 	std::shared_ptr<RenderComponent> m_RenderComponent;
 
@@ -55,6 +62,10 @@ class Engine
 
 	HWND m_hwnd;
 
+	const int m_NumEntities = 1200;
+
+	int m_NumDividend;
+
 public:
 	// Engine constructor, initializes all necessary components.
 	Engine();
@@ -74,8 +85,6 @@ public:
 
 protected:
 	void InitializeWindows(int& screenWidth, int& screenHeight);
-
-	void ProcessInput();
 
 	void Update( double deltaTime );
 
